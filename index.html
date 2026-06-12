@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titu Movies - Admin Control Room</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bright-ruby: #FF1E46;
+            --dark-charcoal: #101012;
+            --pitch-black: #050506;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --text-dim: #b3b3b3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-charcoal), var(--pitch-black));
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header UI matching App Screenshot */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 30, 70, 0.4);
+        }
+
+        header h1 span {
+            color: var(--bright-ruby);
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Form Layout */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 30, 70, 0.15);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input, select, textarea {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--bright-ruby);
+            box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+        }
+
+        /* Custom Toggle Switch for Featured Movie */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input { display: none; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--bright-ruby); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Action Button */
+        .btn-submit {
+            background: var(--bright-ruby);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 30, 70, 0.3);
+        }
+
+        /* Custom Pure Material-Like Status Bar (No Emojis) */
+        .status-bar {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(0, 200, 81, 0.15);
+            border: 1px solid rgba(0, 200, 81, 0.5);
+            color: #00C851;
+        }
+
+        .status-error {
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid rgba(255, 68, 68, 0.5);
+            color: #FF4444;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>TITU<span>MOVIES</span></h1>
+        <p>Control Room • Add New Media</p>
+    </header>
+
+    <div class="form-card">
+        <form id="movieForm">
+            <div class="form-grid">
+                
+                <!-- Movie Title -->
+                <div class="form-group full-width">
+                    <label for="title">Movie Title</label>
+                    <input type="text" id="title" placeholder="e.g., Pushpa 2: The Rule" required>
+                </div>
+
+                <!-- Category/Genre -->
+                <div class="form-group">
+                    <label for="category">Category / Genre</label>
+                    <input type="text" id="category" placeholder="e.g., Action, Drama" required>
+                </div>
+
+                <!-- Section Selector -->
+                <div class="form-group">
+                    <label for="section">App Section</label>
+                    <select id="section">
+                        <option value="TRENDING">Trending Selection</option>
+                        <option value="MARATHI">Marathi Specials</option>
+                        <option value="SUGGESTED">Suggestions For You</option>
+                    </select>
+                </div>
+
+                <!-- Stream URL Server 1 -->
+                <div class="form-group full-width">
+                    <label for="streamUrlServer1">Stream URL (Server 1)</label>
+                    <input type="url" id="streamUrlServer1" placeholder="https://example.com/stream1.mp4" required>
+                </div>
+
+                <!-- Stream URL Server 2 -->
+                <div class="form-group full-width">
+                    <label for="streamUrlServer2">Stream URL (Server 2 - Optional)</label>
+                    <input type="url" id="streamUrlServer2" placeholder="https://example.com/stream2.mp4">
+                </div>
+
+                <!-- Image/Poster URL -->
+                <div class="form-group full-width">
+                    <label for="imageUrl">Poster Image URL</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/poster.jpg" required>
+                </div>
+
+                <!-- Duration -->
+                <div class="form-group">
+                    <label for="duration">Duration</label>
+                    <input type="text" id="duration" placeholder="e.g., 2h 45m" required>
+                </div>
+
+                <!-- Rating -->
+                <div class="form-group">
+                    <label for="rating">IMDb Rating</label>
+                    <input type="number" id="rating" step="0.1" min="0" max="10" placeholder="e.g., 8.5" required>
+                </div>
+
+                <!-- Featured Toggle -->
+                <div class="form-group full-width toggle-group">
+                    <label class="switch">
+                        <input type="checkbox" id="isFeatured">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="isFeatured" style="cursor:pointer;">Set as Top Featured Hero Banner</label>
+                </div>
+
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid var(--btn-icon, fa-circle-plus)"></i> <span id="btnText">ADD MOVIE TO APP</span>
+            </button>
+        </form>
+
+        <!-- Pure Status Alerts (No Emojis) -->
+        <div id="statusBar" class="status-bar">
+            <i id="statusIcon" class="fa-solid"></i>
+            <span id="statusText"></span>
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 Firebase Modular SDK Setup -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 🛠️ अपनी फ़ायरबेस कंसोल से यहाँ अपनी Config रिप्लेस कर देना भाई
+    const firebaseConfig = {
+  apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
+  authDomain: "titu-movies.firebaseapp.com",
+  projectId: "titu-movies",
+  storageBucket: "titu-movies.firebasestorage.app",
+  messagingSenderId: "128123629260",
+  appId: "1:128123629260:web:d60babebdf14d625571c69"
+};
+
+    // Firebase Initialize
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById('movieForm');
+    const statusBar = document.getElementById('statusBar');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
+    const btnText = document.getElementById('btnText');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Button Loading State
+        btnText.innerText = "UPLOADING...";
+        document.documentElement.style.setProperty('--btn-icon', '"\\f1ce"'); // Spinner icon
+        statusBar.style.display = 'none';
+
+        // Auto-Generate a numeric or unique sequential ID matching your Kotlin layout
+        const timestampId = String(Date.now());
+
+        const movieData = {
+            id: timestampId,
+            title: document.getElementById('title').value.trim(),
+            category: document.getElementById('category').value.trim(),
+            contentType: "MOVIE",
+            section: document.getElementById('section').value,
+            streamUrlServer1: document.getElementById('streamUrlServer1').value.trim(),
+            streamUrlServer2: document.getElementById('streamUrlServer2').value.trim(),
+            imageUrl: document.getElementById('imageUrl').value.trim(),
+            duration: document.getElementById('duration').value.trim(),
+            rating: parseFloat(document.getElementById('rating').value).toFixed(1),
+            isFeatured: document.getElementById('isFeatured').checked,
+            languages: ["Hindi", "Marathi"], // default tags
+            downloadLinks: []
+        };
+
+        try {
+            // Adding data directly into your "movies" collection
+            await addDoc(collection(db, "movies"), movieData);
+            
+            // Success Management (No Emojis, Pure Icons)
+            statusBar.className = "status-bar status-success";
+            statusIcon.className = "fa-solid fa-circle-check";
+            statusText.innerText = "SUCCESS: Media added successfully to Firebase and App.";
+            statusBar.style.display = 'flex';
+            form.reset();
+            
+        } catch (error) {
+            // Error Management
+            statusBar.className = "status-bar status-error";
+            statusIcon.className = "fa-solid fa-circle-exclamation";
+            statusText.innerText = "ERROR: Upload failed. " + error.message;
+            statusBar.style.display = 'flex';
+        } finally {
+            btnText.innerText = "ADD MOVIE TO APP";
+            document.documentElement.style.setProperty('--btn-icon', '"\\f055"');
+        }
+    });
+</script>
+
+</body>
+</html>
