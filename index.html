@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titu Movies - TMDb Smart Control Room</title>
-    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -88,6 +86,37 @@
             gap: 8px;
         }
 
+        /* 🛠️ सर्च बॉक्स और फेच बटन का फ्लेक्स लेआउट */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-container input {
+            flex: 1;
+        }
+
+        .btn-fetch {
+            background: rgba(255, 30, 70, 0.1);
+            border: 1px solid var(--bright-ruby);
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 0 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-fetch:hover {
+            background: var(--bright-ruby);
+            box-shadow: 0 0 15px rgba(255, 30, 70, 0.4);
+        }
+
         label {
             font-size: 0.85rem;
             font-weight: 600;
@@ -112,7 +141,6 @@
             box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
         }
 
-        /* 🔍 Live Search Dropdown Styling */
         .search-results {
             position: absolute;
             top: 85px;
@@ -164,7 +192,6 @@
             color: var(--text-dim);
         }
 
-        /* Preview Badges for Posters */
         .preview-box {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -287,27 +314,27 @@
         <form id="movieForm">
             <div class="form-grid">
                 
-                <!-- 🔍 Live Search Box Input -->
                 <div class="form-group full-width">
-                    <label for="searchTitle">Search Movie / Series (Type to Autofill)</label>
-                    <input type="text" id="searchTitle" placeholder="Start typing name... e.g., Pushpa, Inception" autocomplete="off">
-                    <!-- Dropdown Results -->
+                    <label for="searchTitle">Search Movie / Series (Type or click Fetch)</label>
+                    <div class="search-container">
+                        <input type="text" id="searchTitle" placeholder="Type name here... e.g., Pushpa, Inception" autocomplete="off">
+                        <button type="button" id="fetchBtn" class="btn-fetch">
+                            <i class="fa-solid fa-magnifying-glass"></i> FETCH
+                        </button>
+                    </div>
                     <div id="searchResults" class="search-results"></div>
                 </div>
 
-                <!-- Confirmed Title -->
                 <div class="form-group full-width">
                     <label for="title">Confirmed Media Title</label>
                     <input type="text" id="title" placeholder="Selected title will appear here" required readonly>
                 </div>
 
-                <!-- Category/Genre -->
                 <div class="form-group">
                     <label for="category">Category / Genre</label>
                     <input type="text" id="category" placeholder="Action, Drama, Thriller" required>
                 </div>
 
-                <!-- Section Selector -->
                 <div class="form-group">
                     <label for="section">App Section Location</label>
                     <select id="section">
@@ -317,31 +344,26 @@
                     </select>
                 </div>
 
-                <!-- Stream URL Server 1 -->
                 <div class="form-group full-width">
                     <label for="streamUrlServer1">Stream URL (Server 1)</label>
                     <input type="url" id="streamUrlServer1" placeholder="https://yourserver.com/stream1.mp4" required>
                 </div>
 
-                <!-- Stream URL Server 2 -->
                 <div class="form-group full-width">
                     <label for="streamUrlServer2">Stream URL (Server 2 - Optional)</label>
                     <input type="url" id="streamUrlServer2" placeholder="https://yourserver.com/stream2.mp4">
                 </div>
 
-                <!-- Vertical Poster URL -->
                 <div class="form-group">
                     <label for="imageUrl">Vertical Poster URL</label>
                     <input type="url" id="imageUrl" placeholder="Auto-filled path" required>
                 </div>
 
-                <!-- Landscape Backdrop URL (Details / Banner Frame) -->
                 <div class="form-group">
                     <label for="backdropUrl">Landscape Backdrop URL</label>
                     <input type="url" id="backdropUrl" placeholder="Auto-filled landscape path" required>
                 </div>
 
-                <!-- Visual Poster Preview Blocks -->
                 <div class="form-group full-width preview-box">
                     <div>
                         <label style="font-size:0.75rem;">Vertical Preview</label>
@@ -353,19 +375,16 @@
                     </div>
                 </div>
 
-                <!-- Duration -->
                 <div class="form-group">
                     <label for="duration">Duration / Runtime</label>
                     <input type="text" id="duration" placeholder="e.g., 2h 32m" required>
                 </div>
 
-                <!-- Rating -->
                 <div class="form-group">
                     <label for="rating">Rating Score</label>
                     <input type="number" id="rating" step="0.1" placeholder="TMDb / IMDb Score" required>
                 </div>
 
-                <!-- Featured Toggle -->
                 <div class="form-group full-width toggle-group">
                     <label class="switch">
                         <input type="checkbox" id="isFeatured">
@@ -376,13 +395,11 @@
 
             </div>
 
-            <!-- Submit Button -->
             <button type="submit" class="btn-submit">
                 <i class="fa-solid fa-circle-plus"></i> <span id="btnText">ADD MOVIE TO APP</span>
             </button>
         </form>
 
-        <!-- Status Alerts -->
         <div id="statusBar" class="status-bar">
             <i id="statusIcon" class="fa-solid"></i>
             <span id="statusText"></span>
@@ -390,7 +407,6 @@
     </div>
 </div>
 
-<!-- 🔥 Firebase Modular SDK Setup -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -412,6 +428,7 @@
     const TMDB_API_KEY = "91eebcbca31321a0b6f7b54e6bf377b0";
 
     const searchInput = document.getElementById('searchTitle');
+    const fetchBtn = document.getElementById('fetchBtn');
     const searchResults = document.getElementById('searchResults');
     const form = document.getElementById('movieForm');
     const statusBar = document.getElementById('statusBar');
@@ -419,8 +436,8 @@
     const statusText = document.getElementById('statusText');
     const btnText = document.getElementById('btnText');
 
-    // 🔍 1. लाइव सर्च इनपुट इवेंट लिसनर
-    searchInput.addEventListener('input', async () => {
+    // 🔍 मास्टर सर्च ट्रिगर फंक्शन (बटन और टाइपिंग दोनों के लिए कॉमन)
+    async function triggerSearch() {
         const query = searchInput.value.trim();
         if (query.length < 2) {
             searchResults.style.display = 'none';
@@ -449,7 +466,6 @@
                         </div>
                     `;
 
-                    // 🚀 क्लिक होते ही फंक्शन कॉल होगा भाई
                     item.addEventListener('click', () => fetchFullDetails(movie.id));
                     searchResults.appendChild(item);
                 });
@@ -460,9 +476,13 @@
         } catch (err) {
             console.error("TMDb search error:", err);
         }
-    });
+    }
 
-    // 🛠️ फिक्स्ड फंक्शन सिंटैक्स (यहाँ class हटकर शुद्ध function आ गया है)
+    // ⚡ इवेंट्स असाइनमेंट: टाइपिंग और FETCH बटन क्लिक दोनों पर चलेगा
+    searchInput.addEventListener('input', triggerSearch);
+    fetchBtn.addEventListener('click', triggerSearch);
+
+    // 🛠️ फुल डिटेल्स ऑटो-फ़ेच इंजन
     async function fetchFullDetails(movieId) {
         searchResults.style.display = 'none';
         searchInput.value = '';
@@ -500,12 +520,12 @@
     }
 
     document.addEventListener('click', (e) => {
-        if (e.target !== searchInput) {
+        if (e.target !== searchInput && e.target !== fetchBtn && !fetchBtn.contains(e.target)) {
             searchResults.style.display = 'none';
         }
     });
 
-    // 📤 3. फ़ायरबेस में डेटा सबमिट करना
+    // 📤 फ़ायरबेस में डेटा सबमिट करना
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
