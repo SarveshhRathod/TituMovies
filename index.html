@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titu Movies - TMDb Smart Control Room</title>
+    <title>Titu Movies - TMDb ID Smart Room</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -86,7 +86,6 @@
             gap: 8px;
         }
 
-        /* 🛠️ सर्च बॉक्स और फेच बटन का फ्लेक्स लेआउट */
         .search-container {
             display: flex;
             gap: 10px;
@@ -141,57 +140,6 @@
             box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
         }
 
-        .search-results {
-            position: absolute;
-            top: 85px;
-            left: 0;
-            right: 0;
-            background: #16161a;
-            border: 1px solid rgba(255, 30, 70, 0.3);
-            border-radius: 10px;
-            z-index: 1000;
-            max-height: 250px;
-            overflow-y: auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-            display: none;
-        }
-
-        .result-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: background 0.2s;
-        }
-
-        .result-item:hover {
-            background: rgba(255, 30, 70, 0.15);
-        }
-
-        .result-item img {
-            width: 40px;
-            height: 55px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .result-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .result-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .result-date {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-
         .preview-box {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -204,8 +152,8 @@
             height: 120px;
             object-fit: cover;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .toggle-group {
@@ -307,7 +255,7 @@
 <div class="container">
     <header>
         <h1>TITU<span>MOVIES</span></h1>
-        <p>Control Room • TMDb Live Smart Fetch Engine</p>
+        <p>Control Room • TMDb ID Direct Fetch Engine</p>
     </header>
 
     <div class="form-card">
@@ -315,24 +263,23 @@
             <div class="form-grid">
                 
                 <div class="form-group full-width">
-                    <label for="searchTitle">Search Movie / Series (Type or click Fetch)</label>
+                    <label for="tmdbIdInput">Enter TMDb Movie ID (Unique Code)</label>
                     <div class="search-container">
-                        <input type="text" id="searchTitle" placeholder="Type name here... e.g., Pushpa, Inception" autocomplete="off">
+                        <input type="number" id="tmdbIdInput" placeholder="e.g., 27205, 1241982" autocomplete="off" required>
                         <button type="button" id="fetchBtn" class="btn-fetch">
-                            <i class="fa-solid fa-magnifying-glass"></i> FETCH
+                            <i class="fa-solid fa-cloud-download"></i> FETCH DATA
                         </button>
                     </div>
-                    <div id="searchResults" class="search-results"></div>
                 </div>
 
                 <div class="form-group full-width">
                     <label for="title">Confirmed Media Title</label>
-                    <input type="text" id="title" placeholder="Selected title will appear here" required readonly>
+                    <input type="text" id="title" placeholder="Fetched title will appear here" required readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="category">Category / Genre</label>
-                    <input type="text" id="category" placeholder="Action, Drama, Thriller" required>
+                    <input type="text" id="category" placeholder="Auto-filled genres" required>
                 </div>
 
                 <div class="form-group">
@@ -356,7 +303,7 @@
 
                 <div class="form-group">
                     <label for="imageUrl">Vertical Poster URL</label>
-                    <input type="url" id="imageUrl" placeholder="Auto-filled path" required>
+                    <input type="url" id="imageUrl" placeholder="Auto-filled poster path" required>
                 </div>
 
                 <div class="form-group">
@@ -377,12 +324,12 @@
 
                 <div class="form-group">
                     <label for="duration">Duration / Runtime</label>
-                    <input type="text" id="duration" placeholder="e.g., 2h 32m" required>
+                    <input type="text" id="duration" placeholder="Auto-filled runtime" required>
                 </div>
 
                 <div class="form-group">
                     <label for="rating">Rating Score</label>
-                    <input type="number" id="rating" step="0.1" placeholder="TMDb / IMDb Score" required>
+                    <input type="number" id="rating" step="0.1" placeholder="Auto-filled score" required>
                 </div>
 
                 <div class="form-group full-width toggle-group">
@@ -411,7 +358,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 🚀 तुम्हारी अपनी फ़ायरबेस क्रेडेंशियल्स
+    // 🚀 तुम्हारी लाइव फायरबेस क्रेडेंशियल्स
     const firebaseConfig = {
         apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
         authDomain: "titu-movies.firebaseapp.com",
@@ -424,77 +371,45 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔑 TMDb API V3 Key
+    // 🔑 TMDb API Key
     const TMDB_API_KEY = "91eebcbca31321a0b6f7b54e6bf377b0";
 
-    const searchInput = document.getElementById('searchTitle');
+    const tmdbIdInput = document.getElementById('tmdbIdInput');
     const fetchBtn = document.getElementById('fetchBtn');
-    const searchResults = document.getElementById('searchResults');
     const form = document.getElementById('movieForm');
     const statusBar = document.getElementById('statusBar');
     const statusIcon = document.getElementById('statusIcon');
     const statusText = document.getElementById('statusText');
     const btnText = document.getElementById('btnText');
 
-    // 🔍 मास्टर सर्च ट्रिगर फंक्शन (बटन और टाइपिंग दोनों के लिए कॉमन)
-    async function triggerSearch() {
-        const query = searchInput.value.trim();
-        if (query.length < 2) {
-            searchResults.style.display = 'none';
+    // 🛠️ सीधे TMDb ID से डेटा खींचने का मास्टर फंक्शन
+    async function fetchFullDetailsByID() {
+        const movieId = tmdbIdInput.value.trim();
+        if (!movieId) {
+            showAlert("ERROR: Please enter a valid TMDb ID first.", true);
             return;
         }
 
-        try {
-            const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.results && data.results.length > 0) {
-                searchResults.innerHTML = '';
-                data.results.slice(0, 5).forEach(movie => {
-                    const item = document.createElement('div');
-                    item.className = 'result-item';
-                    
-                    const posterPath = movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/92x138?text=No+Image';
-                    const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
-
-                    item.innerHTML = `
-                        <img src="${posterPath}" alt="poster">
-                        <div class="result-details">
-                            <span class="result-title">${movie.title}</span>
-                            <span class="result-date">Year: ${releaseYear} | Rating: ${movie.vote_average}</span>
-                        </div>
-                    `;
-
-                    item.addEventListener('click', () => fetchFullDetails(movie.id));
-                    searchResults.appendChild(item);
-                });
-                searchResults.style.display = 'block';
-            } else {
-                searchResults.style.display = 'none';
-            }
-        } catch (err) {
-            console.error("TMDb search error:", err);
-        }
-    }
-
-    // ⚡ इवेंट्स असाइनमेंट: टाइपिंग और FETCH बटन क्लिक दोनों पर चलेगा
-    searchInput.addEventListener('input', triggerSearch);
-    fetchBtn.addEventListener('click', triggerSearch);
-
-    // 🛠️ फुल डिटेल्स ऑटो-फ़ेच इंजन
-    async function fetchFullDetails(movieId) {
-        searchResults.style.display = 'none';
-        searchInput.value = '';
+        // बटन को लोडिंग स्टेट में डालना
+        fetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> FETCHING...`;
+        fetchBtn.disabled = true;
+        statusBar.style.display = 'none';
 
         try {
             const detailUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=genres`;
             const res = await fetch(detailUrl);
+            
+            if (!res.ok) {
+                throw new Error("Movie ID not found on TMDb servers.");
+            }
+            
             const movie = await res.json();
 
+            // इमेजेज रिज़ॉल्यूशन पाथ
             const verticalImg = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '';
             const landscapeImg = movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : verticalImg;
 
+            // फ़ॉर्म फ़ील्ड्स को इंस्टेंट ऑटो-फ़िल करना
             document.getElementById('title').value = movie.title;
             document.getElementById('imageUrl').value = verticalImg;
             document.getElementById('backdropUrl').value = landscapeImg;
@@ -511,21 +426,33 @@
                 document.getElementById('duration').value = "2h 00m";
             }
 
+            // लाइव प्रीव्यू लोड करना
             document.getElementById('verticalPreview').src = verticalImg;
             document.getElementById('landscapePreview').src = landscapeImg;
 
+            showAlert("SUCCESS: Complete movie data fetched correctly.", false);
+
         } catch (err) {
-            console.error("TMDb Detail fetching error:", err);
+            showAlert("ERROR: " + err.message, true);
+            console.error(err);
+        } finally {
+            fetchBtn.innerHTML = `<i class="fa-solid fa-cloud-download"></i> FETCH DATA`;
+            fetchBtn.disabled = false;
         }
     }
 
-    document.addEventListener('click', (e) => {
-        if (e.target !== searchInput && e.target !== fetchBtn && !fetchBtn.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
+    // अलर्ट मैनेजमेंट फंक्शन
+    function showAlert(message, isError) {
+        statusBar.className = isError ? "status-bar status-error" : "status-bar status-success";
+        statusIcon.className = isError ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
+        statusText.innerText = message;
+        statusBar.style.display = 'flex';
+    }
 
-    // 📤 फ़ायरबेस में डेटा सबमिट करना
+    // बटन क्लिक होने पर फेच इंजन को फायर करना
+    fetchBtn.addEventListener('click', fetchFullDetailsByID);
+
+    // 📤 फ़ायरबेस में फ़ाइनल पुश मारना
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -553,21 +480,15 @@
 
         try {
             await addDoc(collection(db, "movies"), movieData);
-            
-            statusBar.className = "status-bar status-success";
-            statusIcon.className = "fa-solid fa-circle-check";
-            statusText.innerText = "SUCCESS: Smart Media automatically injected to Firebase.";
-            statusBar.style.display = 'flex';
+            showAlert("SUCCESS: Smart Media automatically injected to Firebase.", false);
             
             document.getElementById('verticalPreview').src = "";
             document.getElementById('landscapePreview').src = "";
             form.reset();
+            tmdbIdInput.value = '';
             
         } catch (error) {
-            statusBar.className = "status-bar status-error";
-            statusIcon.className = "fa-solid fa-circle-exclamation";
-            statusText.innerText = "ERROR: Database push failed. " + error.message;
-            statusBar.style.display = 'flex';
+            showAlert("ERROR: Database push failed. " + error.message, true);
         } finally {
             btnText.innerText = "ADD MOVIE TO APP";
         }
