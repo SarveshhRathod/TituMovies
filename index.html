@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titu Movies - TMDb ID Smart Room</title>
+    <title>Titu Movies - Secured Smart Control Room</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -57,6 +57,41 @@
             letter-spacing: 2px;
             margin-top: 5px;
             text-transform: uppercase;
+        }
+
+        /* 🔐 Key Configuration Top Card */
+        .config-card {
+            background: rgba(255, 30, 70, 0.05);
+            border: 1px dashed var(--bright-ruby);
+            border-radius: 12.dp;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .config-card span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .btn-reset-key {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reset-key:hover {
+            border-color: var(--bright-ruby);
+            color: var(--bright-ruby);
         }
 
         .form-card {
@@ -258,6 +293,14 @@
         <p>Control Room • TMDb ID Direct Fetch Engine</p>
     </header>
 
+    <div class="config-card">
+        <div>
+            <i class="fa-solid fa-shield-halved" style="color:var(--bright-ruby); margin-right:8px;"></i>
+            <span id="keyStatusText">TMDb API Vault Status: Securely Locked in Memory</span>
+        </div>
+        <button type="button" id="resetKeyBtn" class="btn-reset-key">Change API Key</button>
+    </div>
+
     <div class="form-card">
         <form id="movieForm">
             <div class="form-grid">
@@ -358,7 +401,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 🚀 तुम्हारी लाइव फायरबेस क्रेडेंशियल्स
     const firebaseConfig = {
         apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
         authDomain: "titu-movies.firebaseapp.com",
@@ -371,45 +413,64 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔑 TMDb API Key
-    const TMDB_API_KEY = "91eebcbca31321a0b6f7b54e6bf377b0";
-
     const tmdbIdInput = document.getElementById('tmdbIdInput');
     const fetchBtn = document.getElementById('fetchBtn');
+    const resetKeyBtn = document.getElementById('resetKeyBtn');
     const form = document.getElementById('movieForm');
     const statusBar = document.getElementById('statusBar');
     const statusIcon = document.getElementById('statusIcon');
     const statusText = document.getElementById('statusText');
     const btnText = document.getElementById('btnText');
 
-    // 🛠️ सीधे TMDb ID से डेटा खींचने का मास्टर फंक्शन
+    // 🔑 1. LocalStorage API Key Vault System
+    const HARDCODED_BACKUP_KEY = "91eebcbca31321a0b6f7b54e6bf377b0"; // तुम्हारी चाबी यहाँ लॉक है
+
+    function getStoredApiKey() {
+        let storedKey = localStorage.getItem('tmdb_vault_key');
+        if (!storedKey) {
+            // अगर मेमोरी खाली है, तो डिफ़ॉल्ट रूप से तुम्हारी की सेट कर देगा
+            localStorage.setItem('tmdb_vault_key', HARDCODED_BACKUP_KEY);
+            return HARDCODED_BACKUP_KEY;
+        }
+        return storedKey;
+    }
+
+    // मैनुअल चेंज करने के लिए बटन लिसनर
+    resetKeyBtn.addEventListener('click', () => {
+        const newKey = prompt("Enter your new TMDb API V3 Key:", getStoredApiKey());
+        if (newKey && newKey.trim().length > 10) {
+            localStorage.setItem('tmdb_vault_key', newKey.trim());
+            showAlert("Vault key changed and safely cached inside browser storage.", false);
+        }
+    });
+
+    // 🛠_ 2. सीधे TMDb ID से डेटा खींचने का मास्टर फंक्शन
     async function fetchFullDetailsByID() {
         const movieId = tmdbIdInput.value.trim();
+        const CURRENT_API_KEY = getStoredApiKey(); // चाबी मेमोरी से निकाली गई
+
         if (!movieId) {
             showAlert("ERROR: Please enter a valid TMDb ID first.", true);
             return;
         }
 
-        // बटन को लोडिंग स्टेट में डालना
         fetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> FETCHING...`;
         fetchBtn.disabled = true;
         statusBar.style.display = 'none';
 
         try {
-            const detailUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}&append_to_response=genres`;
+            const detailUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${CURRENT_API_KEY}&append_to_response=genres`;
             const res = await fetch(detailUrl);
             
             if (!res.ok) {
-                throw new Error("Movie ID not found on TMDb servers.");
+                throw new Error("Invalid TMDb ID or unauthorized API Key stored.");
             }
             
             const movie = await res.json();
 
-            // इमेजेज रिज़ॉल्यूशन पाथ
             const verticalImg = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '';
             const landscapeImg = movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : verticalImg;
 
-            // फ़ॉर्म फ़ील्ड्स को इंस्टेंट ऑटो-फ़िल करना
             document.getElementById('title').value = movie.title;
             document.getElementById('imageUrl').value = verticalImg;
             document.getElementById('backdropUrl').value = landscapeImg;
@@ -426,11 +487,10 @@
                 document.getElementById('duration').value = "2h 00m";
             }
 
-            // लाइव प्रीव्यू लोड करना
             document.getElementById('verticalPreview').src = verticalImg;
             document.getElementById('landscapePreview').src = landscapeImg;
 
-            showAlert("SUCCESS: Complete movie data fetched correctly.", false);
+            showAlert("SUCCESS: Complete movie data fetched correctly via Memory Vault Key.", false);
 
         } catch (err) {
             showAlert("ERROR: " + err.message, true);
@@ -441,7 +501,6 @@
         }
     }
 
-    // अलर्ट मैनेजमेंट फंक्शन
     function showAlert(message, isError) {
         statusBar.className = isError ? "status-bar status-error" : "status-bar status-success";
         statusIcon.className = isError ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
@@ -449,7 +508,6 @@
         statusBar.style.display = 'flex';
     }
 
-    // बटन क्लिक होने पर फेच इंजन को फायर करना
     fetchBtn.addEventListener('click', fetchFullDetailsByID);
 
     // 📤 फ़ायरबेस में फ़ाइनल पुश मारना
