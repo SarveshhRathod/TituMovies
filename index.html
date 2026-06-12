@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titu Movies - Secured Smart Control Room</title>
+    <title>Titu Movies - Ultimate Control Room</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -59,11 +59,10 @@
             text-transform: uppercase;
         }
 
-        /* 🔐 Key Configuration Top Card */
         .config-card {
             background: rgba(255, 30, 70, 0.05);
             border: 1px dashed var(--bright-ruby);
-            border-radius: 12.dp;
+            border-radius: 12px;
             padding: 15px 20px;
             margin-bottom: 25px;
             display: flex;
@@ -335,13 +334,13 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="streamUrlServer1">Stream URL (Server 1)</label>
-                    <input type="url" id="streamUrlServer1" placeholder="https://yourserver.com/stream1.mp4" required>
+                    <label for="streamUrlServer1">Stream URL Server 1 (Supports: .mp4, .m3u8, .mpd)</label>
+                    <input type="url" id="streamUrlServer1" placeholder="e.g., https://site.com/channel.m3u8 or movie.mp4 / manifest.mpd" required>
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="streamUrlServer2">Stream URL (Server 2 - Optional)</label>
-                    <input type="url" id="streamUrlServer2" placeholder="https://yourserver.com/stream2.mp4">
+                    <label for="streamUrlServer2">Stream URL Server 2 (Backup Adaptive Player Link)</label>
+                    <input type="url" id="streamUrlServer2" placeholder="e.g., https://backup.com/stream.mpd or video.m3u8">
                 </div>
 
                 <div class="form-group">
@@ -422,20 +421,18 @@
     const statusText = document.getElementById('statusText');
     const btnText = document.getElementById('btnText');
 
-    // 🔑 1. LocalStorage API Key Vault System
-    const HARDCODED_BACKUP_KEY = "91eebcbca31321a0b6f7b54e6bf377b0"; // तुम्हारी चाबी यहाँ लॉक है
+    // 🔑 Vault Storage System
+    const HARDCODED_BACKUP_KEY = "91eebcbca31321a0b6f7b54e6bf377b0";
 
     function getStoredApiKey() {
         let storedKey = localStorage.getItem('tmdb_vault_key');
         if (!storedKey) {
-            // अगर मेमोरी खाली है, तो डिफ़ॉल्ट रूप से तुम्हारी की सेट कर देगा
             localStorage.setItem('tmdb_vault_key', HARDCODED_BACKUP_KEY);
             return HARDCODED_BACKUP_KEY;
         }
         return storedKey;
     }
 
-    // मैनुअल चेंज करने के लिए बटन लिसनर
     resetKeyBtn.addEventListener('click', () => {
         const newKey = prompt("Enter your new TMDb API V3 Key:", getStoredApiKey());
         if (newKey && newKey.trim().length > 10) {
@@ -444,10 +441,10 @@
         }
     });
 
-    // 🛠_ 2. सीधे TMDb ID से डेटा खींचने का मास्टर फंक्शन
+    // 🛠️ TMDb Direct ID Data Fetch
     async function fetchFullDetailsByID() {
         const movieId = tmdbIdInput.value.trim();
-        const CURRENT_API_KEY = getStoredApiKey(); // चाबी मेमोरी से निकाली गई
+        const CURRENT_API_KEY = getStoredApiKey();
 
         if (!movieId) {
             showAlert("ERROR: Please enter a valid TMDb ID first.", true);
@@ -510,7 +507,7 @@
 
     fetchBtn.addEventListener('click', fetchFullDetailsByID);
 
-    // 📤 फ़ायरबेस में फ़ाइनल पुश मारना
+    // 📤 Submit Data to Firestore
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
