@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titu Movies - Ultimate Control Room</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>Titu Movies - Ultimate Master Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -12,8 +12,9 @@
             --bright-ruby: #FF1E46;
             --dark-charcoal: #101012;
             --pitch-black: #050506;
-            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-bg: rgba(255, 255, 255, 0.05);
             --text-dim: #b3b3b3;
+            --neon-green: #00C851;
         }
 
         * {
@@ -27,17 +28,17 @@
             background: linear-gradient(135deg, var(--dark-charcoal), var(--pitch-black));
             color: #ffffff;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         header h1 {
@@ -59,11 +60,12 @@
             text-transform: uppercase;
         }
 
+        /* 🔐 Vault Status Card */
         .config-card {
-            background: rgba(255, 30, 70, 0.05);
-            border: 1px dashed var(--bright-ruby);
+            background: rgba(255, 30, 70, 0.03);
+            border: 1px dashed rgba(255, 30, 70, 0.3);
             border-radius: 12px;
-            padding: 15px 20px;
+            padding: 12px 20px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
@@ -79,7 +81,7 @@
 
         .btn-reset-key {
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
             color: #ffffff;
             padding: 6px 12px;
             font-size: 0.8rem;
@@ -93,14 +95,51 @@
             color: var(--bright-ruby);
         }
 
+        /* 🗂️ Navigation Tabs Layout */
+        .tabs-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background: rgba(255, 30, 70, 0.15);
+            border-bottom: 2px solid var(--bright-ruby);
+        }
+
+        .panel-content {
+            display: none;
+        }
+
+        .panel-content.active {
+            display: block;
+        }
+
         .form-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 30, 70, 0.15);
+            border: 1px solid rgba(255, 30, 70, 0.12);
             border-radius: 20px;
-            padding: 40px;
+            padding: 35px;
             backdrop-filter: blur(10px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            position: relative;
         }
 
         .form-grid {
@@ -114,7 +153,6 @@
         }
 
         .form-group {
-            position: relative;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -195,7 +233,7 @@
             align-items: center;
             gap: 15px;
             background: rgba(0, 0, 0, 0.2);
-            padding: 12px;
+            padding: 14px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -242,7 +280,7 @@
             letter-spacing: 2px;
             cursor: pointer;
             width: 100%;
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -253,6 +291,13 @@
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(255, 30, 70, 0.3);
+        }
+
+        .btn-config {
+            background: var(--neon-green);
+        }
+        .btn-config:hover {
+            box-shadow: 0 10px 20px rgba(0, 200, 81, 0.3);
         }
 
         .status-bar {
@@ -289,116 +334,181 @@
 <div class="container">
     <header>
         <h1>TITU<span>MOVIES</span></h1>
-        <p>Control Room • TMDb ID Direct Fetch Engine</p>
+        <p>Master Control Panel Engine</p>
     </header>
 
     <div class="config-card">
         <div>
             <i class="fa-solid fa-shield-halved" style="color:var(--bright-ruby); margin-right:8px;"></i>
-            <span id="keyStatusText">TMDb API Vault Status: Securely Locked in Memory</span>
+            <span id="keyStatusText">TMDb API Vault Status: Securely Active</span>
         </div>
-        <button type="button" id="resetKeyBtn" class="btn-reset-key">Change API Key</button>
+        <button type="button" id="resetKeyBtn" class="btn-reset-key">Update API Key</button>
     </div>
 
-    <div class="form-card">
-        <form id="movieForm">
-            <div class="form-grid">
-                
-                <div class="form-group full-width">
-                    <label for="tmdbIdInput">Enter TMDb Movie ID (Unique Code)</label>
-                    <div class="search-container">
-                        <input type="number" id="tmdbIdInput" placeholder="e.g., 27205, 1241982" autocomplete="off" required>
-                        <button type="button" id="fetchBtn" class="btn-fetch">
-                            <i class="fa-solid fa-cloud-download"></i> FETCH DATA
-                        </button>
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('uploadTab')"><i class="fa-solid fa-film"></i> Upload Content</button>
+        <button class="tab-btn" onclick="switchTab('configTab')"><i class="fa-solid fa-sliders"></i> App Settings Room</button>
+    </div>
+
+    <div id="uploadTab" class="panel-content active">
+        <div class="form-card">
+            <form id="movieForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="tmdbIdInput">Enter TMDb Movie ID (Unique Code)</label>
+                        <div class="search-container">
+                            <input type="number" id="tmdbIdInput" placeholder="e.g., 27205, 1241982" autocomplete="off">
+                            <button type="button" id="fetchBtn" class="btn-fetch">
+                                <i class="fa-solid fa-cloud-download"></i> FETCH DATA
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="title">Confirmed Title</label>
+                        <input type="text" id="title" placeholder="Fetched title will load here" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category / Genre</label>
+                        <input type="text" id="category" placeholder="Auto-filled genres" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contentType">Content Type</label>
+                        <select id="contentType">
+                            <option value="MOVIE">MOVIE (Single Stream)</option>
+                            <option value="SERIES">SERIES (Multi-Episode Component)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="section">App Section Location</label>
+                        <select id="section">
+                            <option value="TRENDING">Trending Selection</option>
+                            <option value="MARATHI">Marathi Specials</option>
+                            <option value="SUGGESTED">Suggestions For You</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">Rating Score</label>
+                        <input type="number" id="rating" step="0.1" placeholder="Auto-filled score" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="streamUrlServer1">Stream URL Server 1 (Primary .mp4, .m3u8, .mpd or Embed)</label>
+                        <input type="url" id="streamUrlServer1" placeholder="https://vidsrc-me.ru/embed/movie?tmdb=770906" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="streamUrlServer2">Stream URL Server 2 (Backup Adaptive Player Link)</label>
+                        <input type="url" id="streamUrlServer2" placeholder="e.g., https://backup.com/video.m3u8">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUrl">Vertical Poster URL</label>
+                        <input type="url" id="imageUrl" placeholder="Auto-filled path" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="backdropUrl">Landscape Backdrop URL</label>
+                        <input type="url" id="backdropUrl" placeholder="Auto-filled landscape path" required>
+                    </div>
+
+                    <div class="form-group full-width preview-box">
+                        <div>
+                            <label style="font-size:0.75rem;">Vertical Preview</label>
+                            <img id="verticalPreview" class="preview-img" src="" alt="No Image">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem;">Landscape Preview</label>
+                            <img id="landscapePreview" class="preview-img" src="" alt="No Image">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="duration">Duration / Runtime Description</label>
+                        <input type="text" id="duration" placeholder="e.g., 2h 32m" required>
+                    </div>
+
+                    <div class="form-group full-width toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="isFeatured">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="isFeatured" style="cursor:pointer;">Set as Top Featured Hero Banner</label>
                     </div>
                 </div>
 
-                <div class="form-group full-width">
-                    <label for="title">Confirmed Media Title</label>
-                    <input type="text" id="title" placeholder="Fetched title will appear here" required readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="category">Category / Genre</label>
-                    <input type="text" id="category" placeholder="Auto-filled genres" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="section">App Section Location</label>
-                    <select id="section">
-                        <option value="TRENDING">Trending Selection</option>
-                        <option value="MARATHI">Marathi Specials</option>
-                        <option value="SUGGESTED">Suggestions For You</option>
-                    </select>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="streamUrlServer1">Stream URL Server 1 (Supports: .mp4, .m3u8, .mpd)</label>
-                    <input type="url" id="streamUrlServer1" placeholder="e.g., https://site.com/channel.m3u8 or movie.mp4 / manifest.mpd" required>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="streamUrlServer2">Stream URL Server 2 (Backup Adaptive Player Link)</label>
-                    <input type="url" id="streamUrlServer2" placeholder="e.g., https://backup.com/stream.mpd or video.m3u8">
-                </div>
-
-                <div class="form-group">
-                    <label for="imageUrl">Vertical Poster URL</label>
-                    <input type="url" id="imageUrl" placeholder="Auto-filled poster path" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="backdropUrl">Landscape Backdrop URL</label>
-                    <input type="url" id="backdropUrl" placeholder="Auto-filled landscape path" required>
-                </div>
-
-                <div class="form-group full-width preview-box">
-                    <div>
-                        <label style="font-size:0.75rem;">Vertical Preview</label>
-                        <img id="verticalPreview" class="preview-img" src="" alt="No Image">
-                    </div>
-                    <div>
-                        <label style="font-size:0.75rem;">Landscape Preview</label>
-                        <img id="landscapePreview" class="preview-img" src="" alt="No Image">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="duration">Duration / Runtime</label>
-                    <input type="text" id="duration" placeholder="Auto-filled runtime" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="rating">Rating Score</label>
-                    <input type="number" id="rating" step="0.1" placeholder="Auto-filled score" required>
-                </div>
-
-                <div class="form-group full-width toggle-group">
-                    <label class="switch">
-                        <input type="checkbox" id="isFeatured">
-                        <span class="slider"></span>
-                    </label>
-                    <label for="isFeatured" style="cursor:pointer;">Set as Top Featured Hero Banner</label>
-                </div>
-
-            </div>
-
-            <button type="submit" class="btn-submit">
-                <i class="fa-solid fa-circle-plus"></i> <span id="btnText">ADD MOVIE TO APP</span>
-            </button>
-        </form>
-
-        <div id="statusBar" class="status-bar">
-            <i id="statusIcon" class="fa-solid"></i>
-            <span id="statusText"></span>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-circle-plus"></i> <span id="btnText">ADD MOVIE TO APP</span>
+                </button>
+            </form>
         </div>
+    </div>
+
+    <div id="configControlTab" class="panel-content">
+        <div class="form-card" style="border-color: var(--neon-green);">
+            <form id="configForm">
+                <div class="form-grid">
+                    
+                    <div class="form-group full-width toggle-group" style="background: rgba(0,200,81,0.05);">
+                        <label class="switch">
+                            <input type="checkbox" id="showAds">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="showAds" style="cursor:pointer; font-weight:700;">Enable Premium Monetization (Video Ads Gateways Locked)</label>
+                    </div>
+
+                    <div class="form-group full-width toggle-group" style="background: rgba(255,30,70,0.05);">
+                        <label class="switch">
+                            <input type="checkbox" id="isMaintenanceMode">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="isMaintenanceMode" style="cursor:pointer; font-weight:700; color:var(--bright-ruby);">Activate App Global Maintenance Blocking Mode</label>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="maintenanceMessage">Custom Maintenance Block Text Warning</label>
+                        <textarea id="maintenanceMessage" rows="2" placeholder="App upgrading servers, back in 2 hours..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="globalNotice">Global Notice / Notification Headline Text</label>
+                        <input type="text" id="globalNotice" placeholder="Welcome to Titu Movies V2 Edition!">
+                    </div>
+
+                    <div class="form-group toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="isStreamingEnabled" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <label for="isStreamingEnabled" style="cursor:pointer;">Streaming Allowed</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="latestVersionCode">Latest Version Code Sync</label>
+                        <input type="number" id="latestVersionCode" value="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit btn-config">
+                    <i class="fa-solid fa-floppy-disk"></i> <span id="configBtnText">SAVE APP CONFIG SETTINGS</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="statusBar" class="status-bar">
+        <i id="statusIcon" class="fa-solid"></i>
+        <span id="statusText"></span>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
@@ -412,18 +522,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const tmdbIdInput = document.getElementById('tmdbIdInput');
-    const fetchBtn = document.getElementById('fetchBtn');
-    const resetKeyBtn = document.getElementById('resetKeyBtn');
-    const form = document.getElementById('movieForm');
-    const statusBar = document.getElementById('statusBar');
-    const statusIcon = document.getElementById('statusIcon');
-    const statusText = document.getElementById('statusText');
-    const btnText = document.getElementById('btnText');
-
-    // 🔑 Vault Storage System
     const HARDCODED_BACKUP_KEY = "91eebcbca31321a0b6f7b54e6bf377b0";
-
     function getStoredApiKey() {
         let storedKey = localStorage.getItem('tmdb_vault_key');
         if (!storedKey) {
@@ -433,94 +532,81 @@
         return storedKey;
     }
 
-    resetKeyBtn.addEventListener('click', () => {
-        const newKey = prompt("Enter your new TMDb API V3 Key:", getStoredApiKey());
-        if (newKey && newKey.trim().length > 10) {
+    // Tab Tab Switch Logic Window Component
+    window.switchTab = function(tabId) {
+        document.querySelectorAll('.panel-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        if(tabId === 'uploadTab') {
+            document.getElementById('uploadTab').classList.add('active');
+            event.currentTarget.classList.add('active');
+        } else {
+            document.getElementById('configControlTab').classList.add('active');
+            event.currentTarget.classList.add('active');
+            loadLiveAppConfig(); // सेटिंग्स टैब पर जाते ही फ़ायरबेस से लाइव डेटा लोड होगा भाई
+        }
+    }
+
+    document.getElementById('resetKeyBtn').addEventListener('click', () => {
+        const newKey = prompt("Update TMDb API Key:", getStoredApiKey());
+        if(newKey && newKey.trim().length > 10) {
             localStorage.setItem('tmdb_vault_key', newKey.trim());
-            showAlert("Vault key changed and safely cached inside browser storage.", false);
+            showNotification("Memory Key Vault successfully refreshed.", false);
         }
     });
 
-    // 🛠️ TMDb Direct ID Data Fetch
-    async function fetchFullDetailsByID() {
-        const movieId = tmdbIdInput.value.trim();
-        const CURRENT_API_KEY = getStoredApiKey();
+    // 🎬 TMDb Live ID Fetch Engine Logic
+    document.getElementById('fetchBtn').addEventListener('click', async () => {
+        const movieId = document.getElementById('tmdbIdInput').value.trim();
+        const CURRENT_KEY = getStoredApiKey();
 
-        if (!movieId) {
-            showAlert("ERROR: Please enter a valid TMDb ID first.", true);
+        if(!movieId) {
+            showNotification("ERROR: Enter a valid TMDb code first.", true);
             return;
         }
 
-        fetchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> FETCHING...`;
-        fetchBtn.disabled = true;
-        statusBar.style.display = 'none';
+        document.getElementById('fetchBtn').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> LOADING...`;
 
         try {
-            const detailUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${CURRENT_API_KEY}&append_to_response=genres`;
-            const res = await fetch(detailUrl);
-            
-            if (!res.ok) {
-                throw new Error("Invalid TMDb ID or unauthorized API Key stored.");
-            }
+            const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${CURRENT_KEY}&append_to_response=genres`);
+            if(!res.ok) throw new Error("Invalid TMDb target document matching ID.");
             
             const movie = await res.json();
-
-            const verticalImg = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '';
-            const landscapeImg = movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : verticalImg;
+            const vImg = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '';
+            const lImg = movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : vImg;
 
             document.getElementById('title').value = movie.title;
-            document.getElementById('imageUrl').value = verticalImg;
-            document.getElementById('backdropUrl').value = landscapeImg;
+            document.getElementById('imageUrl').value = vImg;
+            document.getElementById('backdropUrl').value = lImg;
             document.getElementById('rating').value = movie.vote_average ? movie.vote_average.toFixed(1) : "0.0";
-            
-            const genreNames = movie.genres ? movie.genres.map(g => g.name).join(', ') : 'Action';
-            document.getElementById('category').value = genreNames;
+            document.getElementById('category').value = movie.genres ? movie.genres.map(g => g.name).join(', ') : 'Action';
 
-            if (movie.runtime) {
-                const hours = Math.floor(movie.runtime / 60);
-                const minutes = movie.runtime % 60;
-                document.getElementById('duration').value = `${hours}h ${minutes}m`;
+            if(movie.runtime) {
+                document.getElementById('duration').value = `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`;
             } else {
-                document.getElementById('duration').value = "2h 00m";
+                document.getElementById('duration').value = "2h 10m";
             }
 
-            document.getElementById('verticalPreview').src = verticalImg;
-            document.getElementById('landscapePreview').src = landscapeImg;
-
-            showAlert("SUCCESS: Complete movie data fetched correctly via Memory Vault Key.", false);
-
-        } catch (err) {
-            showAlert("ERROR: " + err.message, true);
-            console.error(err);
+            document.getElementById('verticalPreview').src = vImg;
+            document.getElementById('landscapePreview').src = lImg;
+            showNotification("TMDb metadata mapping finished successfully.", false);
+        } catch(err) {
+            showNotification("ERROR: Fetch processing halted. " + err.message, true);
         } finally {
-            fetchBtn.innerHTML = `<i class="fa-solid fa-cloud-download"></i> FETCH DATA`;
-            fetchBtn.disabled = false;
+            document.getElementById('fetchBtn').innerHTML = `<i class="fa-solid fa-cloud-download"></i> FETCH DATA`;
         }
-    }
+    });
 
-    function showAlert(message, isError) {
-        statusBar.className = isError ? "status-bar status-error" : "status-bar status-success";
-        statusIcon.className = isError ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
-        statusText.innerText = message;
-        statusBar.style.display = 'flex';
-    }
-
-    fetchBtn.addEventListener('click', fetchFullDetailsByID);
-
-    // 📤 Submit Data to Firestore
-    form.addEventListener('submit', async (e) => {
+    // 📤 Submit Content Form Data to Firestore
+    document.getElementById('movieForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        btnText.innerText = "UPLOADING...";
-        statusBar.style.display = 'none';
-
-        const timestampId = String(Date.now());
+        document.getElementById('btnText').innerText = "PUSHING RESOURCE...";
 
         const movieData = {
-            id: timestampId,
+            id: String(Date.now()),
             title: document.getElementById('title').value.trim(),
             category: document.getElementById('category').value.trim(),
-            contentType: "MOVIE",
+            contentType: document.getElementById('contentType').value,
             section: document.getElementById('section').value,
             streamUrlServer1: document.getElementById('streamUrlServer1').value.trim(),
             streamUrlServer2: document.getElementById('streamUrlServer2').value.trim(),
@@ -535,19 +621,70 @@
 
         try {
             await addDoc(collection(db, "movies"), movieData);
-            showAlert("SUCCESS: Smart Media automatically injected to Firebase.", false);
-            
+            showNotification("SUCCESS: Content package injected into FireStore cluster.", false);
             document.getElementById('verticalPreview').src = "";
             document.getElementById('landscapePreview').src = "";
-            form.reset();
-            tmdbIdInput.value = '';
-            
-        } catch (error) {
-            showAlert("ERROR: Database push failed. " + error.message, true);
+            document.getElementById('movieForm').reset();
+            document.getElementById('tmdbIdInput').value = '';
+        } catch (err) {
+            showNotification("ERROR: Database push rejected. " + err.message, true);
         } finally {
-            btnText.innerText = "ADD MOVIE TO APP";
+            document.getElementById('btnText').innerText = "ADD MOVIE TO APP";
         }
     });
+
+    // ==========================================
+    // ⚙️ APP CONFIG APPCONFIG LIVE CONTROLLER LOGIC ENGINE
+    // ==========================================
+    async function loadLiveAppConfig() {
+        try {
+            const configDocRef = doc(db, "config", "settings");
+            const snap = await getDoc(configDocRef);
+            if(snap.exists()) {
+                const liveData = snap.data();
+                document.getElementById('showAds').checked = liveData.showAds ?? true;
+                document.getElementById('isMaintenanceMode').checked = liveData.isMaintenanceMode ?? false;
+                document.getElementById('maintenanceMessage').value = liveData.maintenanceMessage ?? "";
+                document.getElementById('globalNotice').value = liveData.globalNotice ?? "";
+                document.getElementById('isStreamingEnabled').checked = liveData.isStreamingEnabled ?? true;
+                document.getElementById('latestVersionCode').value = liveData.latestVersionCode ?? 1;
+            }
+        } catch(err) {
+            console.error("Failed to load settings document: ", err);
+        }
+    }
+
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        document.getElementById('configBtnText').innerText = "SYNCHRONIZING LOCK...";
+
+        const settingsData = {
+            showAds: document.getElementById('showAds').checked,
+            isMaintenanceMode: document.getElementById('isMaintenanceMode').checked,
+            maintenanceMessage: document.getElementById('maintenanceMessage').value.trim(),
+            globalNotice: document.getElementById('globalNotice').value.trim(),
+            isStreamingEnabled: document.getElementById('isStreamingEnabled').checked,
+            latestVersionCode: parseInt(document.getElementById('latestVersionCode').value)
+        };
+
+        try {
+            await setDoc(doc(db, "config", "settings"), settingsData);
+            showNotification("SUCCESS: Live App global variables refreshed across all user clusters.", false);
+        } catch(err) {
+            showNotification("ERROR: Configuration synchronization rejected. " + err.message, true);
+        } finally {
+            document.getElementById('configBtnText').innerText = "SAVE APP CONFIG SETTINGS";
+        }
+    });
+
+    function showNotification(msg, isErr) {
+        const bar = document.getElementById('statusBar');
+        bar.className = isErr ? "status-bar status-error" : "status-bar status-success";
+        document.getElementById('statusIcon').className = isErr ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
+        document.getElementById('statusText').innerText = msg;
+        bar.style.display = 'flex';
+        setTimeout(() => bar.style.display = 'none', 5000);
+    }
 </script>
 
 </body>
