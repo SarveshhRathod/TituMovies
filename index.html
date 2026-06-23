@@ -3,436 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titu Movies - Ultimate Master Control Panel</title>
+    <title>Titu Movies - Premium Admin Panel</title>
     <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
+        /* --- Premium Deep Black & Orange Theme --- */
         :root {
-            --bright-ruby: #FF1E46;
-            --dark-charcoal: #101012;
-            --pitch-black: #050506;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text-dim: #b3b3b3;
-            --neon-green: #00C851;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            --deep-black: #030303;
+            --surface-dark: #121212;
+            --surface-glass: rgba(26, 26, 26, 0.8);
+            --orange-light: #FFFFB74D;
+            --orange-dark: #FFFF9800;
+            --text-gray: #AAAAAA;
+            --white: #FFFFFF;
         }
 
         body {
-            background: linear-gradient(135deg, var(--dark-charcoal), var(--pitch-black));
-            color: #ffffff;
-            min-height: 100vh;
-            padding: 30px 20px;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--deep-black);
+            color: var(--white);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-weight: 800;
+            margin: 0;
+            background: -webkit-linear-gradient(left, var(--orange-light), var(--orange-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 36px;
         }
 
         .container {
-            max-width: 900px;
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255, 30, 70, 0.4);
-        }
-
-        header h1 span { color: var(--bright-ruby); }
-
-        header p {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
-
-        .tabs-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            font-size: 1rem;
-            font-weight: 700;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 8px;
-        }
-
-        .tab-btn.active {
-            color: #ffffff;
-            background: rgba(255, 30, 70, 0.15);
-            border-bottom: 2px solid var(--bright-ruby);
-        }
-
-        .panel-content { display: none; }
-        .panel-content.active { display: block; }
-
-        .form-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 30, 70, 0.12);
-            border-radius: 20px;
-            padding: 35px;
+        /* Form Section */
+        .form-section {
+            flex: 1;
+            background: var(--surface-glass);
+            padding: 25px;
+            border-radius: 15px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid #222;
+        }
+
+        .form-section h2 {
+            margin-top: 0;
+            color: var(--orange-light);
+            font-size: 20px;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
         }
-
-        .full-width { grid-column: span 2; }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
         }
 
-        .ad-row-box {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
-        }
-
-        .ad-control-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        /* Full width for links */
+        .full-width {
+            grid-column: span 2;
         }
 
         label {
-            font-size: 0.85rem;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 5px;
             font-weight: 600;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
-        input, select, textarea {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #ffffff;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            width: 100%;
-        }
-
-        input:focus {
+        input, select {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
             outline: none;
-            border-color: var(--bright-ruby);
+            transition: 0.3s;
         }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 24px;
+        input:focus, select:focus {
+            border-color: var(--orange-dark);
+            box-shadow: 0 0 8px rgba(255, 152, 0, 0.3);
         }
 
-        .switch input { display: none; }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333;
-            transition: .4s;
-            border-radius: 24px;
+        .hint {
+            font-size: 10px;
+            color: #777;
+            margin-top: 3px;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px; width: 16px;
-            left: 4px; bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider { background-color: var(--bright-ruby); }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        .btn-submit {
-            background: var(--bright-ruby);
-            color: #ffffff;
+        button {
+            background: linear-gradient(to right, var(--orange-light), var(--orange-dark));
+            color: black;
             border: none;
-            border-radius: 10px;
             padding: 15px;
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            cursor: pointer;
             width: 100%;
-            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* List Section */
+        .list-section {
+            flex: 1;
+            background: var(--surface-dark);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #222;
+            height: 800px;
+            overflow-y: auto;
+        }
+
+        .movie-card {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
+            gap: 15px;
+            border-left: 4px solid var(--orange-dark);
         }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 30, 70, 0.3);
+        .movie-card img {
+            width: 50px;
+            height: 70px;
+            border-radius: 5px;
+            object-fit: cover;
         }
 
-        .btn-config { background: var(--neon-green); }
-        .btn-config:hover { box-shadow: 0 10px 20px rgba(0, 200, 81, 0.3); }
-
-        .status-bar {
-            margin-top: 20px;
-            padding: 14px;
-            border-radius: 10px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
+        .movie-info {
+            flex: 1;
         }
 
-        .status-success { background: rgba(0, 200, 81, 0.15); border: 1px solid rgba(0, 200, 81, 0.5); color: #00C851; }
-        .status-error { background: rgba(255, 68, 68, 0.15); border: 1px solid rgba(255, 68, 68, 0.5); color: #FF4444; }
+        .movie-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+
+        .movie-info p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .delete-btn {
+            background: #ff3d00;
+            color: white;
+            padding: 8px 12px;
+            width: auto;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>TITU<span>MOVIES</span></h1>
-        <p>Master Control Panel Engine</p>
-    </header>
-
-    <!-- 🗂️ Tabs -->
-    <div class="tabs-container">
-        <button class="tab-btn active" onclick="switchTab('uploadTab')"><i class="fa-solid fa-film"></i> Upload Content</button>
-        <button class="tab-btn" onclick="switchTab('configTab')"><i class="fa-solid fa-sliders"></i> App Settings Room</button>
+    <div class="header">
+        <h1>TITU MOVIES ADMIN</h1>
+        <p style="color: var(--text-gray); font-size: 14px;">Upload Movies & Series Directly to App</p>
     </div>
 
-    <!-- TAB 1: UPLOAD CONTENT (बाकी सब फ़ील्ड्स सेम हैं भाई) -->
-    <div id="uploadTab" class="panel-content active">
-        <!-- पुराना मूवी अपलोड फ़ॉर्म यहाँ रहेगा -->
-    </div>
-
-    <!-- ========================================== -->
-    <!-- ⚙️ TAB 2: GLOBAL APP MASTER ROOM (ADVANCED ADS CONTROL) -->
-    <!-- ========================================== -->
-    <div id="configControlTab" class="panel-content">
-        <div class="form-card" style="border-color: var(--neon-green);">
-            <form id="configForm">
-                
-                <h3 style="margin-bottom: 20px; letter-spacing: 1px; color: var(--neon-green);">DYNAMIC ADVERTISEMENTS GATEWAYS</h3>
-
-                <!-- 1. Movie Choose Ads (Details Screen Open) -->
-                <div class="ad-row-box">
-                    <div class="ad-control-header">
-                        <label style="font-weight: 700; color: #fff;">1. Movie Choose Ads (On Details Screen Open)</label>
-                        <label class="switch">
-                            <input type="checkbox" id="adMovieChooseShow">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <input type="text" id="adMovieChooseId" placeholder="Enter Interstitial Ad Unit ID">
-                </div>
-
-                <!-- 2. Stream Ads (On Watch Click) -->
-                <div class="ad-row-box">
-                    <div class="ad-control-header">
-                        <label style="font-weight: 700; color: #fff;">2. Stream Ads (Unlock Server Playback Gateway)</label>
-                        <label class="switch">
-                            <input type="checkbox" id="adStreamShow">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <input type="text" id="adStreamId" placeholder="Enter Rewarded Interstitial Ad Unit ID">
-                </div>
-
-                <!-- 3. Download Ads -->
-                <div class="ad-row-box">
-                    <div class="ad-control-header">
-                        <label style="font-weight: 700; color: #fff;">3. Download Ads (On High-Speed Download Trigger)</label>
-                        <label class="switch">
-                            <input type="checkbox" id="adDownloadShow">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <input type="text" id="adDownloadId" placeholder="Enter Interstitial / Rewarded Ad Unit ID">
-                </div>
-
-                <!-- 4. Pause Ads -->
-                <div class="ad-row-box">
-                    <div class="ad-control-header">
-                        <label style="font-weight: 700; color: #fff;">4. Player Pause Ads (Inside ExoPlayer Overlay Frame)</label>
-                        <label class="switch">
-                            <input type="checkbox" id="adPauseShow">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <input type="text" id="adPauseId" placeholder="Enter Banner Ad Unit ID / Custom Native Text Field">
-                </div>
-
-                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 25px 0;">
-                <h3 style="margin-bottom: 20px; letter-spacing: 1px; color: var(--bright-ruby);">GLOBAL MAINTENANCE & CORE</h3>
-
+    <div class="container">
+        <!-- Add Movie Form -->
+        <div class="form-section">
+            <h2>+ Add New Content</h2>
+            <form id="addMovieForm">
                 <div class="form-grid">
-                    <div class="form-group full-width ad-row-box" style="margin-bottom:0;">
-                        <div class="ad-control-header">
-                            <label style="font-weight:700; color:var(--bright-ruby);">Activate App Global Maintenance Mode</label>
-                            <label class="switch">
-                                <input type="checkbox" id="isMaintenanceMode">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <textarea id="maintenanceMessage" rows="2" placeholder="App upgrading servers, back in 2 hours..."></textarea>
+                    
+                    <div class="form-group full-width">
+                        <label>Title</label>
+                        <input type="text" id="title" placeholder="e.g. Pushpa 2: The Rule" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dynamic Category</label>
+                        <input type="text" id="category" placeholder="e.g. Action, Series, Bollywood" required>
+                        <span class="hint">App me isi naam se row banegi (e.g. 'Web Series')</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Language</label>
+                        <input type="text" id="language" value="Hindi" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Release Year</label>
+                        <input type="text" id="release_year" placeholder="e.g. 2026" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>IMDb Rating</label>
+                        <input type="text" id="rating" placeholder="e.g. 8.5" required>
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="globalNotice">Global Notice Bar Text</label>
-                        <input type="text" id="globalNotice" placeholder="Welcome to Titu Movies V2!">
+                        <label>Portrait Poster URL (Standard)</label>
+                        <input type="url" id="poster_url" placeholder="https://..." required>
                     </div>
-                </div>
 
-                <button type="submit" class="btn-submit btn-config">
-                    <i class="fa-solid fa-floppy-disk"></i> <span id="configBtnText">SAVE ALL SETTINGS TO FIRESTORE</span>
-                </button>
+                    <div class="form-group full-width">
+                        <label>Landscape Backdrop URL (Hero Slider ke liye)</label>
+                        <input type="url" id="backdrop_url" placeholder="https://...">
+                        <span class="hint">Top slider me dikhane ke liye landscape image. Nahi dalenge to slider me nahi aayega.</span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Stream URL (M3U8 / MP4 for Player)</label>
+                        <input type="url" id="stream_url" placeholder="https://..." required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label style="color: var(--orange-light);">⬇️ 480p Download Link (Optional)</label>
+                        <input type="url" id="download_480" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label style="color: var(--orange-light);">⬇️ 720p Download Link (Optional)</label>
+                        <input type="url" id="download_720" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label style="color: var(--orange-light);">⬇️ 1080p Download Link (Optional)</label>
+                        <input type="url" id="download_1080" placeholder="https://...">
+                        <span class="hint">Jo link khali chhodenge, app me uska button nahi dikhega!</span>
+                    </div>
+
+                </div>
+                <button type="submit">Upload to Titu Movies App</button>
             </form>
+        </div>
+
+        <!-- Movie List Section -->
+        <div class="list-section">
+            <h2>Live App Data (<span id="movieCount">0</span>)</h2>
+            <div id="moviesList">
+                <!-- Movies will load here from Firebase -->
+                <p style="color: #777; text-align: center; margin-top: 50px;">Loading data...</p>
+            </div>
         </div>
     </div>
 
-    <div id="statusBar" class="status-bar">
-        <i id="statusIcon" class="fa-solid"></i>
-        <span id="statusText"></span>
-    </div>
-</div>
+    <!-- Firebase Compat Libraries (Easy to run without local server) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
-        authDomain: "titu-movies.firebaseapp.com",
-        projectId: "titu-movies",
-        storageBucket: "titu-movies.firebasestorage.app",
-        messagingSenderId: "128123629260",
-        appId: "1:128123629260:web:d60babebdf14d625571c69"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.switchTab = function(tabId) {
-        document.querySelectorAll('.panel-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
-        if(tabId === 'uploadTab') {
-            document.getElementById('uploadTab').classList.add('active');
-            event.currentTarget.classList.add('active');
-        } else {
-            document.getElementById('configControlTab').classList.add('active');
-            event.currentTarget.classList.add('active');
-            loadLiveAppConfig();
-        }
-    }
-
-    // ⚙️ Load Live Data from Firestore config/settings
-    async function loadLiveAppConfig() {
-        try {
-            const snap = await getDoc(doc(db, "config", "settings"));
-            if(snap.exists()) {
-                const data = snap.data();
-                
-                // Add fields toggles and ids mapping
-                document.getElementById('adMovieChooseShow').checked = data.adMovieChooseShow ?? true;
-                document.getElementById('adMovieChooseId').value = data.adMovieChooseId ?? "";
-                
-                document.getElementById('adStreamShow').checked = data.adStreamShow ?? true;
-                document.getElementById('adStreamId').value = data.adStreamId ?? "";
-                
-                document.getElementById('adDownloadShow').checked = data.adDownloadShow ?? true;
-                document.getElementById('adDownloadId').value = data.adDownloadId ?? "";
-                
-                document.getElementById('adPauseShow').checked = data.adPauseShow ?? true;
-                document.getElementById('adPauseId').value = data.adPauseId ?? "";
-                
-                document.getElementById('isMaintenanceMode').checked = data.isMaintenanceMode ?? false;
-                document.getElementById('maintenanceMessage').value = data.maintenanceMessage ?? "";
-                document.getElementById('globalNotice').value = data.globalNotice ?? "";
-            }
-        } catch(err) { console.error(err); }
-    }
-
-    // 📤 Save Panel Settings
-    document.getElementById('configForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        document.getElementById('configBtnText').innerText = "SYNCHRONIZING LOCK...";
-
-        const settingsData = {
-            adMovieChooseShow: document.getElementById('adMovieChooseShow').checked,
-            adMovieChooseId: document.getElementById('adMovieChooseId').value.trim(),
-            
-            adStreamShow: document.getElementById('adStreamShow').checked,
-            adStreamId: document.getElementById('adStreamId').value.trim(),
-            
-            adDownloadShow: document.getElementById('adDownloadShow').checked,
-            adDownloadId: document.getElementById('adDownloadId').value.trim(),
-            
-            adPauseShow: document.getElementById('adPauseShow').checked,
-            adPauseId: document.getElementById('adPauseId').value.trim(),
-            
-            isMaintenanceMode: document.getElementById('isMaintenanceMode').checked,
-            maintenanceMessage: document.getElementById('maintenanceMessage').value.trim(),
-            globalNotice: document.getElementById('globalNotice').value.trim()
+    <script>
+        // Aapka Latest Titu Movies Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
+            authDomain: "titu-movies.firebaseapp.com",
+            projectId: "titu-movies",
+            storageBucket: "titu-movies.firebasestorage.app",
+            messagingSenderId: "128123629260",
+            appId: "1:128123629260:web:d60babebdf14d625571c69"
         };
 
-        try {
-            await setDoc(doc(db, "config", "settings"), settingsData);
-            showNotification("SUCCESS: All specific add modules updated instantly.", false);
-        } catch(err) {
-            showNotification("ERROR: Failed to save to database: " + err.message, true);
-        } finally {
-            document.getElementById('configBtnText').innerText = "SAVE ALL SETTINGS TO FIRESTORE";
-        }
-    });
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    function showNotification(msg, isErr) {
-        const bar = document.getElementById('statusBar');
-        bar.className = isErr ? "status-bar status-error" : "status-bar status-success";
-        document.getElementById('statusIcon').className = isErr ? "fa-solid fa-circle-exclamation" : "fa-solid fa-circle-check";
-        document.getElementById('statusText').innerText = msg;
-        bar.style.display = 'flex';
-    }
-</script>
+        // 1. ADD MOVIE LOGIC
+        document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button');
+            submitBtn.innerText = "Uploading...";
+            submitBtn.disabled = true;
+
+            const movieData = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                language: document.getElementById('language').value,
+                release_year: document.getElementById('release_year').value,
+                rating: document.getElementById('rating').value,
+                poster_url: document.getElementById('poster_url').value,
+                backdrop_url: document.getElementById('backdrop_url').value,
+                stream_url: document.getElementById('stream_url').value,
+                download_480: document.getElementById('download_480').value,
+                download_720: document.getElementById('download_720').value,
+                download_1080: document.getElementById('download_1080').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // To sort latest
+            };
+
+            try {
+                await db.collection("movies").add(movieData);
+                alert("Success! Movie/Series added to App.");
+                e.target.reset(); // Form clear karna
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("Error adding movie. Check console.");
+            } finally {
+                submitBtn.innerText = "Upload to Titu Movies App";
+                submitBtn.disabled = false;
+            }
+        });
+
+        // 2. FETCH AND DISPLAY MOVIES (REAL-TIME)
+        db.collection("movies").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            const listDiv = document.getElementById('moviesList');
+            document.getElementById('movieCount').innerText = snapshot.docs.length;
+            listDiv.innerHTML = '';
+
+            if(snapshot.docs.length === 0){
+                listDiv.innerHTML = '<p style="color: #777; text-align: center; margin-top: 50px;">No movies added yet.</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                // Card UI
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <img src="${data.poster_url}" onerror="this.src='https://via.placeholder.com/50x70?text=No+Img'">
+                    <div class="movie-info">
+                        <h3>${data.title}</h3>
+                        <p>Cat: <b>${data.category}</b> | Lang: ${data.language}</p>
+                        <p style="color: #FFFF9800;">${data.download_720 || data.download_1080 ? '✅ Download Available' : '❌ No Download'}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMovie('${doc.id}')">Delete</button>
+                `;
+                listDiv.appendChild(card);
+            });
+        });
+
+        // 3. DELETE MOVIE LOGIC
+        window.deleteMovie = async (id) => {
+            if (confirm("Are you sure you want to delete this from the App?")) {
+                try {
+                    await db.collection("movies").doc(id).delete();
+                } catch (error) {
+                    console.error("Error removing document: ", error);
+                    alert("Error deleting movie.");
+                }
+            }
+        };
+    </script>
 </body>
 </html>
