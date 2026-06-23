@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titu Movies - Premium Admin Panel</title>
-    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -17,6 +16,7 @@
             --orange-dark: #FFFF9800;
             --text-gray: #AAAAAA;
             --white: #FFFFFF;
+            --tmdb-blue: #01b4e4;
         }
 
         body {
@@ -66,6 +66,32 @@
             font-size: 20px;
         }
 
+        /* TMDB Importer Box */
+        .tmdb-box {
+            background: rgba(1, 180, 228, 0.1);
+            border: 1px solid var(--tmdb-blue);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .tmdb-box input {
+            flex: 1;
+            margin: 0;
+            border-color: var(--tmdb-blue);
+        }
+
+        .tmdb-box button {
+            width: auto;
+            margin: 0;
+            background: var(--tmdb-blue);
+            color: white;
+            padding: 12px 20px;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -77,7 +103,6 @@
             flex-direction: column;
         }
 
-        /* Full width for links */
         .full-width {
             grid-column: span 2;
         }
@@ -189,6 +214,8 @@
             .container { flex-direction: column; }
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
+            .tmdb-box { flex-direction: column; }
+            .tmdb-box button { width: 100%; }
         }
     </style>
 </head>
@@ -200,8 +227,13 @@
     </div>
 
     <div class="container">
-        <!-- Add Movie Form -->
         <div class="form-section">
+            
+            <div class="tmdb-box">
+                <input type="text" id="tmdbSearchInput" placeholder="Search Movie / Series on TMDb...">
+                <button type="button" onclick="fetchTMDBData()">Fetch Auto-Data 🚀</button>
+            </div>
+
             <h2>+ Add New Content</h2>
             <form id="addMovieForm">
                 <div class="form-grid">
@@ -214,12 +246,12 @@
                     <div class="form-group">
                         <label>Dynamic Category</label>
                         <input type="text" id="category" placeholder="e.g. Action, Series, Bollywood" required>
-                        <span class="hint">App me isi naam se row banegi (e.g. 'Web Series')</span>
+                        <span class="hint">App me isi naam se row banegi</span>
                     </div>
 
                     <div class="form-group">
                         <label>Language</label>
-                        <input type="text" id="language" value="Hindi" required>
+                        <input type="text" id="language" placeholder="e.g. Hindi, English" required>
                     </div>
 
                     <div class="form-group">
@@ -240,7 +272,6 @@
                     <div class="form-group full-width">
                         <label>Landscape Backdrop URL (Hero Slider ke liye)</label>
                         <input type="url" id="backdrop_url" placeholder="https://...">
-                        <span class="hint">Top slider me dikhane ke liye landscape image. Nahi dalenge to slider me nahi aayega.</span>
                     </div>
 
                     <div class="form-group full-width">
@@ -269,22 +300,77 @@
             </form>
         </div>
 
-        <!-- Movie List Section -->
         <div class="list-section">
             <h2>Live App Data (<span id="movieCount">0</span>)</h2>
             <div id="moviesList">
-                <!-- Movies will load here from Firebase -->
                 <p style="color: #777; text-align: center; margin-top: 50px;">Loading data...</p>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Compat Libraries (Easy to run without local server) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // Aapka Latest Titu Movies Firebase Config
+        // --- TMDb AUTO IMPORTER SCRIPT ---
+        async function fetchTMDBData() {
+            const query = document.getElementById('tmdbSearchInput').value.trim();
+            if (!query) {
+                alert("Movie ya Series ka naam toh likho bhai!");
+                return;
+            }
+
+            const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=en-US&page=1`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    // Movie ya TV show filter karein
+                    const item = data.results.find(x => x.media_type === 'movie' || x.media_type === 'tv');
+                    
+                    if (!item) {
+                        alert("Kuch nahi mila TMDb par!");
+                        return;
+                    }
+
+                    // Data Extract Karna
+                    const title = item.title || item.name;
+                    const date = item.release_date || item.first_air_date || "";
+                    const year = date ? date.split('-')[0] : "";
+                    const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
+                    
+                    // Language Converter
+                    let lang = "English";
+                    if(item.original_language === 'hi') lang = "Hindi";
+                    else if(item.original_language === 'te') lang = "Telugu";
+                    else if(item.original_language === 'ta') lang = "Tamil";
+                    else if(item.original_language === 'ko') lang = "Korean";
+
+                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
+                    const backdrop = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
+
+                    // Form Me Auto-Fill Karna
+                    document.getElementById('title').value = title;
+                    document.getElementById('release_year').value = year;
+                    document.getElementById('rating').value = rating;
+                    document.getElementById('language').value = lang;
+                    document.getElementById('poster_url').value = poster;
+                    document.getElementById('backdrop_url').value = backdrop;
+
+                    alert("✅ TMDb Data Fetched Successfully! Ab bas Stream/Download link dalo.");
+                } else {
+                    alert("TMDb par is naam se kuch nahi mila!");
+                }
+            } catch (error) {
+                console.error("TMDb Error:", error);
+                alert("TMDb se connect karne me problem hui. Network check karein.");
+            }
+        }
+
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
             authDomain: "titu-movies.firebaseapp.com",
@@ -294,11 +380,10 @@
             appId: "1:128123629260:web:d60babebdf14d625571c69"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 1. ADD MOVIE LOGIC
+        // --- ADD MOVIE TO FIREBASE ---
         document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -318,13 +403,14 @@
                 download_480: document.getElementById('download_480').value,
                 download_720: document.getElementById('download_720').value,
                 download_1080: document.getElementById('download_1080').value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() // To sort latest
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
                 await db.collection("movies").add(movieData);
                 alert("Success! Movie/Series added to App.");
                 e.target.reset(); // Form clear karna
+                document.getElementById('tmdbSearchInput').value = ""; // Search bar bhi clear karna
             } catch (error) {
                 console.error("Error adding document: ", error);
                 alert("Error adding movie. Check console.");
@@ -334,7 +420,7 @@
             }
         });
 
-        // 2. FETCH AND DISPLAY MOVIES (REAL-TIME)
+        // --- FETCH AND DISPLAY MOVIES (REAL-TIME) ---
         db.collection("movies").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const listDiv = document.getElementById('moviesList');
             document.getElementById('movieCount').innerText = snapshot.docs.length;
@@ -348,7 +434,6 @@
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 
-                // Card UI
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
@@ -364,7 +449,7 @@
             });
         });
 
-        // 3. DELETE MOVIE LOGIC
+        // --- DELETE MOVIE ---
         window.deleteMovie = async (id) => {
             if (confirm("Are you sure you want to delete this from the App?")) {
                 try {
