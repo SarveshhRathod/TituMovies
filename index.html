@@ -2,77 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Titu Movies | Master Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titu Movies | Super Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #050505; --card: #111; --orange: #FF9800; --text: #fff; --border: #333; }
+        * { box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        
-        .grid-layout { display: grid; grid-template-columns: 300px 1fr 350px; gap: 20px; max-width: 1400px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); overflow-y: auto; max-height: 90vh; }
-        
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+
+        .grid-layout { display: grid; grid-template-columns: 300px 1fr 350px; gap: 20px; max-width: 1400px; margin: auto; align-items: start; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); overflow-y: auto; max-height: 88vh; margin-bottom: 20px; }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         button { width: 100%; padding: 12px; background: var(--orange); color: black; border: none; cursor: pointer; font-weight: bold; border-radius: 6px; margin-top: 10px; transition: 0.3s; }
         button:hover { opacity: 0.8; }
-        
-        h3 { color: var(--orange); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        h3 { color: var(--orange); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; position: sticky; top: 0; background: var(--card); z-index: 10; }
         .label { font-size: 12px; color: #aaa; font-weight: 600; margin-top: 5px; display: block; }
-        
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
-        .btn-small { width: auto; padding: 5px 10px; margin: 0; font-size: 12px; }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #222; font-size: 13px; gap: 10px; }
+        .action-btns { display: flex; gap: 5px; flex-shrink: 0; }
+        .btn-small { width: auto; padding: 6px 10px; margin: 0; font-size: 11px; }
         .btn-red { background: #d32f2f; color: white; }
         .btn-green { background: #388e3c; color: white; }
+        .btn-blue { background: #01b4e4; color: white; }
+
+        .empty-msg { color: #666; font-size: 13px; text-align: center; padding: 20px 0; }
+        .status-msg { font-size: 12px; padding: 8px; border-radius: 6px; margin-top: 6px; display: none; }
+        .status-msg.show { display: block; }
+        .status-msg.ok { background: rgba(56,142,60,0.15); color: #6fcf73; }
+        .status-msg.err { background: rgba(211,47,47,0.15); color: #ff7b7b; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #FF9800; border-radius: 10px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            .grid-layout { grid-template-columns: 1fr 1fr; }
+            .grid-layout > div:first-child { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .grid-layout { grid-template-columns: 1fr; gap: 14px; }
+            .grid-layout > div:first-child { grid-template-columns: 1fr; }
+            .card { max-height: none; margin-bottom: 14px; }
+            h3 { font-size: 16px; }
+            div[style*="grid-template-columns: 1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="grid-layout">
-    
-    <!-- 1. CATEGORY MANAGER -->
-    <div class="card">
-        <h3>⚙️ Manage Categories</h3>
-        <input type="text" id="catName" placeholder="E.g. Bollywood, Web Series...">
-        <button onclick="addCategory()">+ Add Category</button>
-        <div id="catList" style="margin-top: 20px;"></div>
+
+    <!-- LEFT COLUMN: CATEGORIES & USERS -->
+    <div>
+        <div class="card" style="max-height: 40vh;">
+            <h3>⚙️ Categories</h3>
+            <input type="text" id="catName" placeholder="E.g. Action, Web Series...">
+            <button onclick="addCategory()">+ Add Category</button>
+            <div id="catList" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="card" style="max-height: 44vh;">
+            <h3>👥 User Control</h3>
+            <div id="userList">Loading Users...</div>
+        </div>
     </div>
 
-    <!-- 2. MOVIE MASTER UPLOADER -->
+    <!-- MIDDLE COLUMN: MOVIE UPLOADER -->
     <div class="card">
-        <h3>🎬 Advanced Movie Uploader</h3>
-        
+        <h3>🎬 Movie Master Form</h3>
+
         <!-- Smart Fetcher -->
-        <div style="background: rgba(1,180,228,0.1); padding: 15px; border-radius: 8px; border: 1px solid #01b4e4; margin-bottom: 15px;">
-            <input type="text" id="tmdbInput" placeholder="Enter Name / TMDb ID / IMDb ID...">
-            <button onclick="fetchTMDBData()" style="background:#01b4e4; color: white;">Fetch Auto-Data 🚀</button>
+        <div style="background: rgba(1,180,228,0.05); padding: 15px; border-radius: 8px; border: 1px dashed #01b4e4; margin-bottom: 15px;">
+            <input type="text" id="tmdbInput" placeholder="Enter Name / TMDb ID / IMDb ID (tt...)">
+            <button id="fetchBtn" onclick="fetchTMDBData()" style="background:#01b4e4; color: white;">Fetch Auto-Data 🚀</button>
+            <div id="tmdbStatus" class="status-msg"></div>
         </div>
 
         <span class="label">Basic Details</span>
         <input type="text" id="title" placeholder="Movie / Series Title" required>
         <select id="catDropdown" required><option value="">Select Category</option></select>
-        
+
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-            <input type="text" id="language" placeholder="Language (Hindi)" value="Hindi">
-            <input type="text" id="release_year" placeholder="Year (2026)">
-            <input type="text" id="rating" placeholder="Rating (8.5)">
+            <input type="text" id="language" placeholder="Language" value="Hindi">
+            <input type="text" id="release_year" placeholder="Year">
+            <input type="text" id="rating" placeholder="Rating">
         </div>
 
-        <span class="label">Images & Links</span>
+        <span class="label">Images & Media Links</span>
         <input type="text" id="poster" placeholder="Poster URL (Portrait)">
-        <input type="text" id="backdrop" placeholder="Backdrop URL (Landscape Slider)">
+        <input type="text" id="backdrop" placeholder="Backdrop URL (Hero Slider)">
+        <input type="text" id="trailer" placeholder="Trailer URL (YouTube)">
         <input type="text" id="stream" placeholder="Main Stream URL (M3U8/MP4)" required>
 
-        <span class="label">Download Links (Leave blank to hide button in app)</span>
+        <span class="label">Download Links (Optional)</span>
         <input type="text" id="dl480" placeholder="⬇️ 480p Download Link">
         <input type="text" id="dl720" placeholder="⬇️ 720p Download Link">
         <input type="text" id="dl1080" placeholder="⬇️ 1080p Download Link">
-        
-        <button onclick="uploadMovie()">📤 Publish Content to App</button>
+
+        <button id="submitBtn" onclick="uploadMovie()">📤 Publish Content to App</button>
+        <button id="cancelBtn" onclick="cancelEdit()" style="display:none; background:#d32f2f; color:white;">❌ Cancel Edit</button>
+        <div id="formStatus" class="status-msg"></div>
     </div>
 
-    <!-- 3. USER MANAGER -->
+    <!-- RIGHT COLUMN: UPLOADED MOVIES LIST -->
     <div class="card">
-        <h3>👥 User Control (Ban/Unban)</h3>
-        <div id="userList">Loading Users...</div>
+        <h3>🗂️ Live App Data (<span id="movieCount">0</span>)</h3>
+        <div id="moviesList">Loading movies...</div>
     </div>
 
 </div>
@@ -92,107 +133,240 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let editingMovieId = null; // Edit track karne ke liye
+
+    function showStatus(elId, msg, ok) {
+        const el = document.getElementById(elId);
+        el.textContent = msg;
+        el.className = 'status-msg show ' + (ok ? 'ok' : 'err');
+        setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
     // ==========================================
-    // 1. SMART TMDB FETCHER (FIXED)
+    // 1. ADVANCED TMDB FETCHER (BUG FIXED)
     // ==========================================
     async function fetchTMDBData() {
         const input = document.getElementById('tmdbInput').value.trim();
         if (!input) return alert("Please enter Name or ID!");
 
-        const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
-        let url;
+        const btn = document.getElementById('fetchBtn');
+        btn.disabled = true;
+        btn.textContent = "Fetching...";
 
-        // Check if input is IMDb ID, pure number, or Name
-        if (input.startsWith("tt")) {
-            url = `https://api.themoviedb.org/3/find/${input}?api_key=${apiKey}&external_source=imdb_id`;
-        } else if (!isNaN(input)) {
-            url = `https://api.themoviedb.org/3/movie/${input}?api_key=${apiKey}`;
-        } else {
-            url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(input)}`;
-        }
+        const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
+        let tmdbUrl = input.toLowerCase().startsWith("tt")
+            ? `https://api.themoviedb.org/3/find/${input}?api_key=${apiKey}&external_source=imdb_id`
+            : (!isNaN(input)
+                ? `https://api.themoviedb.org/3/movie/${input}?api_key=${apiKey}`
+                : `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(input)}`);
 
         try {
-            const res = await fetch(url).then(r => r.json());
-            let item = null;
-
-            if (input.startsWith("tt")) item = res.movie_results?.[0] || res.tv_results?.[0];
-            else if (!isNaN(input)) item = res; 
-            else item = res.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv');
-
-            if (!item) return alert("Not found on TMDb!");
-
-            // Extract Data
-            const date = item.release_date || item.first_air_date || "";
-            document.getElementById('title').value = item.title || item.name || "";
-            document.getElementById('release_year').value = date ? date.split('-')[0] : "";
-            document.getElementById('rating').value = item.vote_average ? item.vote_average.toFixed(1) : "";
-            document.getElementById('poster').value = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
-            document.getElementById('backdrop').value = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
-
-            alert("✅ Data Fetched! Fill the Stream/Download links now.");
+            // DIRECT FETCH (Working Fast)
+            const r = await fetch(tmdbUrl);
+            if (!r.ok) throw new Error("Direct fetch HTTP " + r.status);
+            const res = await r.json();
+            processTMDBData(input, res);
         } catch (e) {
-            console.error("Fetch Error:", e);
-            alert("Error fetching data. Check your network or ID.");
+            console.log("Direct fetch failed, trying secure proxy...", e);
+            try {
+                // FALLBACK PROXY (Agar ISP / CORS block kare)
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(tmdbUrl)}`;
+                const proxyR = await fetch(proxyUrl);
+                if (!proxyR.ok) throw new Error("Proxy fetch HTTP " + proxyR.status);
+                const proxyRes = await proxyR.json();
+                const res = JSON.parse(proxyRes.contents);
+                processTMDBData(input, res);
+            } catch (err) {
+                console.error(err);
+                showStatus('tmdbStatus', "❌ Data fetch failed! Check network or enter details manually.", false);
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Fetch Auto-Data 🚀";
         }
     }
 
+    function processTMDBData(input, res) {
+        let item = null;
+        if (input.toLowerCase().startsWith("tt")) item = res.movie_results?.[0] || res.tv_results?.[0];
+        else if (!isNaN(input)) item = res;
+        else item = res.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv') || res.results?.[0];
+
+        if (!item) {
+            showStatus('tmdbStatus', "⚠️ Movie/Series not found on TMDb!", false);
+            return;
+        }
+
+        // Set Values
+        const date = item.release_date || item.first_air_date || "";
+        document.getElementById('title').value = item.title || item.name || "";
+        document.getElementById('release_year').value = date ? date.split('-')[0] : "";
+        document.getElementById('rating').value = item.vote_average ? parseFloat(item.vote_average).toFixed(1) : "";
+        document.getElementById('poster').value = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
+        document.getElementById('backdrop').value = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
+
+        // Language mapper
+        const langCode = item.original_language;
+        if (langCode === 'hi') document.getElementById('language').value = "Hindi";
+        else if (langCode === 'en') document.getElementById('language').value = "English";
+
+        showStatus('tmdbStatus', "✅ Data Successfully Filled!", true);
+    }
+
     // ==========================================
-    // 2. MOVIE UPLOADER (ALL FIELDS)
+    // 2. MOVIE UPLOADER & UPDATER
     // ==========================================
     async function uploadMovie() {
-        const title = document.getElementById('title').value;
+        const title = document.getElementById('title').value.trim();
         const category = document.getElementById('catDropdown').value;
-        const stream = document.getElementById('stream').value;
+        const stream = document.getElementById('stream').value.trim();
 
-        if(!title || !category || !stream) return alert("Title, Category, and Stream URL are strictly required!");
+        if (!title || !category || !stream) return alert("Title, Category, and Stream URL are required!");
 
         const movieData = {
             title: title,
             category: category,
             language: document.getElementById('language').value || "Hindi",
-            release_year: document.getElementById('release_year').value || "2024",
-            rating: document.getElementById('rating').value || "0.0",
+            release_year: document.getElementById('release_year').value,
+            rating: document.getElementById('rating').value,
             poster_url: document.getElementById('poster').value,
             backdrop_url: document.getElementById('backdrop').value,
+            trailer_url: document.getElementById('trailer').value,
             stream_url: stream,
             download_480: document.getElementById('dl480').value,
             download_720: document.getElementById('dl720').value,
             download_1080: document.getElementById('dl1080').value,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() // For sorting
         };
 
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+
         try {
-            await db.collection("movies").add(movieData);
-            alert("🚀 Movie Published to App Successfully!");
-            // Clear inputs
-            document.querySelectorAll('input').forEach(i => i.value = '');
-            document.getElementById('language').value = 'Hindi';
+            if (editingMovieId) {
+                // Update existing movie
+                await db.collection("movies").doc(editingMovieId).update(movieData);
+                showStatus('formStatus', "✅ Movie Updated Successfully!", true);
+                cancelEdit();
+            } else {
+                // Add new movie
+                await db.collection("movies").add(movieData);
+                showStatus('formStatus', "🚀 Movie Published to App!", true);
+                clearForm();
+            }
         } catch (e) {
             console.error(e);
-            alert("Failed to publish!");
+            showStatus('formStatus', "❌ Failed to save: " + e.message, false);
+        } finally {
+            btn.disabled = false;
         }
     }
 
+    // FIX: select dropdown ko bhi reset karta hai ab (pehle sirf inputs clear hote the)
+    function clearForm() {
+        document.querySelectorAll('input:not(#language)').forEach(i => i.value = '');
+        document.getElementById('language').value = 'Hindi';
+        document.getElementById('catDropdown').value = '';
+    }
+
     // ==========================================
-    // 3. CATEGORY MANAGER (REAL-TIME)
+    // 3. EDIT & DELETE MOVIES
+    // ==========================================
+    db.collection("movies").orderBy("timestamp", "desc").onSnapshot(snap => {
+        const list = document.getElementById('moviesList');
+        document.getElementById('movieCount').innerText = snap.docs.length;
+
+        if (snap.docs.length === 0) {
+            list.innerHTML = '<div class="empty-msg">No movies uploaded yet.</div>';
+            return;
+        }
+
+        list.innerHTML = '';
+        snap.forEach(doc => {
+            const data = doc.data();
+            list.innerHTML += `
+                <div class="list-item">
+                    <div style="line-height: 1.3; width: 60%;">
+                        <strong style="color: #FF9800; font-size:14px;">${data.title}</strong><br>
+                        <span style="font-size: 11px; color: #888;">${data.category} | ${data.language}</span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-small btn-blue" onclick="loadEditData('${doc.id}')">Edit</button>
+                        <button class="btn-small btn-red" onclick="deleteMovie('${doc.id}')">Del</button>
+                    </div>
+                </div>
+            `;
+        });
+    }, err => {
+        console.error(err);
+        document.getElementById('moviesList').innerHTML = '<div class="empty-msg">Failed to load movies. Check Firestore rules / connection.</div>';
+    });
+
+    window.loadEditData = async (id) => {
+        const doc = await db.collection("movies").doc(id).get();
+        const data = doc.data();
+
+        document.getElementById('title').value = data.title || "";
+        document.getElementById('catDropdown').value = data.category || "";
+        document.getElementById('language').value = data.language || "";
+        document.getElementById('release_year').value = data.release_year || "";
+        document.getElementById('rating').value = data.rating || "";
+        document.getElementById('poster').value = data.poster_url || "";
+        document.getElementById('backdrop').value = data.backdrop_url || "";
+        document.getElementById('trailer').value = data.trailer_url || "";
+        document.getElementById('stream').value = data.stream_url || "";
+        document.getElementById('dl480').value = data.download_480 || "";
+        document.getElementById('dl720').value = data.download_720 || "";
+        document.getElementById('dl1080').value = data.download_1080 || "";
+
+        editingMovieId = id;
+        document.getElementById('submitBtn').innerText = "💾 Save Movie Updates";
+        document.getElementById('cancelBtn').style.display = "block";
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.cancelEdit = () => {
+        editingMovieId = null;
+        clearForm();
+        document.getElementById('submitBtn').innerText = "📤 Publish Content to App";
+        document.getElementById('cancelBtn').style.display = "none";
+    };
+
+    window.deleteMovie = async (id) => {
+        if (confirm("Are you sure you want to remove this movie?")) {
+            try {
+                await db.collection("movies").doc(id).delete();
+            } catch (e) {
+                alert("Delete failed: " + e.message);
+            }
+        }
+    };
+
+    // ==========================================
+    // 4. CATEGORY MANAGER
     // ==========================================
     async function addCategory() {
         const name = document.getElementById('catName').value.trim();
-        if(name) {
-            await db.collection("categories").add({name});
-            document.getElementById('catName').value = '';
+        if (name) {
+            try {
+                await db.collection("categories").add({ name });
+                document.getElementById('catName').value = '';
+            } catch (e) {
+                alert("Failed to add category: " + e.message);
+            }
         }
     }
 
     window.deleteCategory = async (id) => {
-        if(confirm("Delete this category?")) await db.collection("categories").doc(id).delete();
+        if (confirm("Delete this category?")) await db.collection("categories").doc(id).delete();
     };
 
     db.collection("categories").onSnapshot(snap => {
         const drop = document.getElementById('catDropdown');
         const list = document.getElementById('catList');
+        const currentVal = drop.value;
         drop.innerHTML = '<option value="">Select Category</option>';
-        list.innerHTML = '';
+        list.innerHTML = snap.docs.length === 0 ? '<div class="empty-msg">No categories yet.</div>' : '';
 
         snap.forEach(doc => {
             const name = doc.data().name;
@@ -200,36 +374,45 @@
             list.innerHTML += `
                 <div class="list-item">
                     <span>${name}</span>
-                    <button class="btn-small btn-red" onclick="deleteCategory('${doc.id}')">Delete</button>
+                    <button class="btn-small btn-red" onclick="deleteCategory('${doc.id}')">X</button>
                 </div>`;
         });
+        drop.value = currentVal;
+    }, err => {
+        console.error(err);
+        document.getElementById('catList').innerHTML = '<div class="empty-msg">Failed to load categories.</div>';
     });
 
     // ==========================================
-    // 4. USER BAN/UNBAN (REAL-TIME)
+    // 5. USER BAN/UNBAN
     // ==========================================
     db.collection("users").onSnapshot(snap => {
         const l = document.getElementById('userList');
+        if (snap.docs.length === 0) {
+            l.innerHTML = '<div class="empty-msg">No users found.</div>';
+            return;
+        }
         l.innerHTML = "";
         snap.forEach(doc => {
             const u = doc.data();
             const email = u.email || "Unknown User";
             const isBanned = u.status === 'banned';
-            
+
             l.innerHTML += `
                 <div class="list-item">
-                    <span style="color: ${isBanned ? '#d32f2f' : '#aaa'}">${email}</span>
+                    <span style="color: ${isBanned ? '#d32f2f' : '#ccc'}">${email}</span>
                     <button class="btn-small ${isBanned ? 'btn-green' : 'btn-red'}" onclick="toggleBan('${doc.id}', ${isBanned})">
-                        ${isBanned ? 'Unban' : 'Ban User'}
+                        ${isBanned ? 'Unban' : 'Ban'}
                     </button>
                 </div>`;
         });
+    }, err => {
+        console.error(err);
+        document.getElementById('userList').innerHTML = '<div class="empty-msg">Failed to load users.</div>';
     });
 
     window.toggleBan = async (id, isCurrentlyBanned) => {
-        await db.collection("users").doc(id).update({
-            status: isCurrentlyBanned ? 'active' : 'banned'
-        });
+        await db.collection("users").doc(id).update({ status: isCurrentlyBanned ? 'active' : 'banned' });
     };
 </script>
 </body>
