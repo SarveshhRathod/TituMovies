@@ -313,63 +313,73 @@
 
     <script>
         // --- TMDb AUTO IMPORTER SCRIPT ---
-        async function fetchTMDBData() {
-            const query = document.getElementById('tmdbSearchInput').value.trim();
-            if (!query) {
-                alert("Movie ya Series ka naam toh likho bhai!");
-                return;
-            }
+      // --- TMDb AUTO IMPORTER (UPGRADED: Supports Name, TMDb ID, and IMDb ID) ---
+async function fetchTMDBData() {
+    const input = document.getElementById('tmdbSearchInput').value.trim();
+    if (!input) {
+        alert("Kuch toh enter karo bhai!");
+        return;
+    }
 
-            const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
-            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=en-US&page=1`;
+    const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
+    let url;
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
+    // Check if input is an IMDb ID (starts with tt)
+    if (input.startsWith("tt")) {
+        url = `https://api.themoviedb.org/3/find/${input}?api_key=${apiKey}&external_source=imdb_id&language=en-US`;
+    } 
+    // Check if input is a pure numeric TMDb ID
+    else if (!isNaN(input)) {
+        url = `https://api.themoviedb.org/3/movie/${input}?api_key=${apiKey}&language=en-US`;
+    } 
+    // Otherwise, search by name
+    else {
+        url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(input)}&language=en-US`;
+    }
 
-                if (data.results && data.results.length > 0) {
-                    // Movie ya TV show filter karein
-                    const item = data.results.find(x => x.media_type === 'movie' || x.media_type === 'tv');
-                    
-                    if (!item) {
-                        alert("Kuch nahi mila TMDb par!");
-                        return;
-                    }
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
 
-                    // Data Extract Karna
-                    const title = item.title || item.name;
-                    const date = item.release_date || item.first_air_date || "";
-                    const year = date ? date.split('-')[0] : "";
-                    const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
-                    
-                    // Language Converter
-                    let lang = "English";
-                    if(item.original_language === 'hi') lang = "Hindi";
-                    else if(item.original_language === 'te') lang = "Telugu";
-                    else if(item.original_language === 'ta') lang = "Tamil";
-                    else if(item.original_language === 'ko') lang = "Korean";
+        let item = null;
 
-                    const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
-                    const backdrop = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
-
-                    // Form Me Auto-Fill Karna
-                    document.getElementById('title').value = title;
-                    document.getElementById('release_year').value = year;
-                    document.getElementById('rating').value = rating;
-                    document.getElementById('language').value = lang;
-                    document.getElementById('poster_url').value = poster;
-                    document.getElementById('backdrop_url').value = backdrop;
-
-                    alert("✅ TMDb Data Fetched Successfully! Ab bas Stream/Download link dalo.");
-                } else {
-                    alert("TMDb par is naam se kuch nahi mila!");
-                }
-            } catch (error) {
-                console.error("TMDb Error:", error);
-                alert("TMDb se connect karne me problem hui. Network check karein.");
-            }
+        // Extracting item based on input type
+        if (input.startsWith("tt")) {
+            item = data.movie_results?.[0] || data.tv_results?.[0];
+        } else if (!isNaN(input)) {
+            item = data; // Pure TMDb ID response is direct
+        } else {
+            item = data.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv');
         }
 
+        if (!item) {
+            alert("TMDb par is ID/Name se kuch nahi mila!");
+            return;
+        }
+
+        // --- Data Extraction ---
+        const title = item.title || item.name;
+        const date = item.release_date || item.first_air_date || "";
+        const year = date ? date.split('-')[0] : "";
+        const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
+        
+        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
+        const backdrop = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
+
+        // Fill Form
+        document.getElementById('title').value = title;
+        document.getElementById('release_year').value = year;
+        document.getElementById('rating').value = rating;
+        document.getElementById('poster_url').value = poster;
+        document.getElementById('backdrop_url').value = backdrop;
+
+        alert("✅ Data Fetched from TMDb/IMDb!");
+
+    } catch (error) {
+        console.error("TMDb Error:", error);
+        alert("Error: Network ya Invalid ID.");
+    }
+}
         // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
