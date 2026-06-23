@@ -84,7 +84,8 @@
 
         /* Smart Fetcher Box */
         .fetcher-box { background: rgba(59, 130, 246, 0.05); padding: 16px; border-radius: 10px; border: 1px dashed rgba(59, 130, 246, 0.3); margin-bottom: 20px; display: flex; gap: 12px; align-items: center; }
-        .fetcher-box input { margin: 0; flex: 1; }
+        .fetcher-box input { margin: 0; flex: 1; border: 1px solid rgba(59,130,246,0.5); }
+        .fetcher-box input:focus { box-shadow: 0 0 0 2px rgba(59,130,246,0.2); border-color: var(--blue); }
         .fetcher-box button { width: auto; margin: 0; background: var(--blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .fetcher-box button:hover { opacity: 0.9; }
 
@@ -137,8 +138,8 @@
                     <h3>Upload / Edit Master Content</h3>
                     
                     <div class="fetcher-box">
-                        <input type="text" id="tmdbInput" placeholder="TMDb / IMDb ID or Name...">
-                        <button onclick="fetchTMDBData()">Fetch Auto-Data 🚀</button>
+                        <input type="text" id="tmdbInput" placeholder="Paste Full TMDb URL (or IMDb ID / Name)...">
+                        <button onclick="fetchTMDBData()">Fetch URL Auto-Data 🚀</button>
                     </div>
 
                     <!-- 🔥 INTELLIGENT CONTENT SWITCHER 🔥 -->
@@ -174,7 +175,7 @@
                         <input type="text" id="trailer" placeholder="Trailer URL (YouTube)">
                     </div>
 
-                    <!-- 🎥 MOVIE FIELDS (Visible if Movie is selected) -->
+                    <!-- 🎥 MOVIE FIELDS -->
                     <div id="movie-fields" class="dynamic-section">
                         <h4 style="margin-top:0; color:var(--orange);">Movie Stream & Downloads</h4>
                         <input type="text" id="m_stream" placeholder="Main Stream URL (M3U8/MP4) [Required]">
@@ -183,7 +184,7 @@
                         <input type="text" id="m_dl1080" placeholder="1080p Download Link" style="margin-top: 10px;">
                     </div>
 
-                    <!-- 📺 SERIES FIELDS (Visible if Series is selected) -->
+                    <!-- 📺 SERIES FIELDS -->
                     <div id="series-fields" class="dynamic-section" style="display: none;">
                         <h4 style="margin-top:0; color:var(--blue);">Add / Update Episode</h4>
                         <div class="grid-2">
@@ -288,7 +289,6 @@
             if(btnEl) btnEl.classList.add('active');
         }
 
-        // Form Toggler based on Type
         function toggleFormFields() {
             const type = document.getElementById('contentType').value;
             if (type === 'series') {
@@ -300,48 +300,83 @@
             }
         }
 
-        // Smart Fetcher Auto-Detector
+        // 🔥 THE MAGIC FIX: FULL URL PARSING & AUTO TYPE DETECTION 🔥
         async function fetchTMDBData() {
             const input = document.getElementById('tmdbInput').value.trim();
-            if (!input) return showToast("Enter IMDb/TMDb ID or Name!", "warning");
+            if (!input) return showToast("Enter Full TMDb URL, IMDb ID or Name!", "warning");
             
             const btn = document.querySelector('.fetcher-box button');
             btn.disabled = true; btn.innerText = "Fetching...";
 
-            const tmdbUrl = input.startsWith("tt") 
-                ? `https://api.themoviedb.org/3/find/${input}?api_key=91eebcbca31321a0b6f7b54e6bf377b0&external_source=imdb_id`
-                : (!isNaN(input) 
-                    ? `https://api.themoviedb.org/3/movie/${input}?api_key=91eebcbca31321a0b6f7b54e6bf377b0`
-                    : `https://api.themoviedb.org/3/search/multi?api_key=91eebcbca31321a0b6f7b54e6bf377b0&query=${encodeURIComponent(input)}`);
+            const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
+            let tmdbUrl = "";
+            let mediaTypeHint = ""; // 'tv' or 'movie'
+
+            // 1. DYNAMIC URL DETECTION
+            if (input.includes("themoviedb.org")) {
+                const match = input.match(/\/(movie|tv)\/(\d+)/);
+                if (match) {
+                    mediaTypeHint = match[1]; 
+                    const tmdbId = match[2];
+                    tmdbUrl = `https://api.themoviedb.org/3/${mediaTypeHint}/${tmdbId}?api_key=${apiKey}`;
+                } else {
+                    btn.disabled = false; btn.innerText = "Fetch URL Auto-Data 🚀";
+                    return showToast("Invalid TMDb URL format!", "error");
+                }
+            } 
+            // 2. IMDB ID DETECTION (tt1234567)
+            else if (input.startsWith("tt")) {
+                tmdbUrl = `https://api.themoviedb.org/3/find/${input}?api_key=${apiKey}&external_source=imdb_id`;
+            } 
+            // 3. TEXT SEARCH
+            else {
+                tmdbUrl = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(input)}`;
+            }
 
             try {
                 let res;
                 try { res = await fetch(tmdbUrl).then(r => r.json()); } 
                 catch (corsErr) { res = await fetch("https://corsproxy.io/?" + encodeURIComponent(tmdbUrl)).then(r => r.json()); }
 
-                let item = input.startsWith("tt") 
-                    ? (res.movie_results?.[0] || res.tv_results?.[0]) 
-                    : (!isNaN(input) ? res : res.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv'));
+                let item = null;
+                let isTV = false;
+
+                // Extract data based on the method
+                if (mediaTypeHint) {
+                    item = res; 
+                    isTV = (mediaTypeHint === 'tv');
+                } else if (input.startsWith("tt")) {
+                    if (res.tv_results && res.tv_results.length > 0) { item = res.tv_results[0]; isTV = true; }
+                    else if (res.movie_results && res.movie_results.length > 0) { item = res.movie_results[0]; isTV = false; }
+                } else {
+                    item = res.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv');
+                    if (item) isTV = (item.media_type === 'tv');
+                }
                 
-                if (!item) return showToast("No metadata found on TMDB!", "error");
+                if (!item || item.success === false) return showToast("No metadata found on TMDB!", "error");
 
-                // Auto Type Detection
-                const isTV = item.media_type === 'tv' || item.name !== undefined || item.first_air_date !== undefined;
+                // Auto Type Detection & Form Switch
                 document.getElementById('contentType').value = isTV ? 'series' : 'movie';
-                toggleFormFields(); // Trigger UI change automatically
+                toggleFormFields(); 
 
+                // Fill Inputs
                 document.getElementById('title').value = item.title || item.name || "";
                 document.getElementById('release_year').value = (item.release_date || item.first_air_date || "").split('-')[0];
                 document.getElementById('rating').value = item.vote_average ? parseFloat(item.vote_average).toFixed(1) : "";
                 document.getElementById('poster').value = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
                 document.getElementById('backdrop').value = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
-                document.getElementById('language').value = item.original_language === 'hi' ? 'Hindi' : 'English';
+                
+                let lang = item.original_language || "hi";
+                document.getElementById('language').value = lang === 'hi' ? 'Hindi' : (lang === 'en' ? 'English' : lang.toUpperCase());
+                
                 showToast(`Auto-Data fetched! Detected as: ${isTV ? 'TV Series' : 'Movie'}`);
-            } catch (e) { showToast("Failed to fetch data.", "error"); } 
-            finally { btn.disabled = false; btn.innerText = "Fetch Auto-Data 🚀"; }
+            } catch (e) { 
+                showToast("Failed to fetch data.", "error"); 
+            } finally { 
+                btn.disabled = false; btn.innerText = "Fetch URL Auto-Data 🚀"; 
+            }
         }
 
-        // Smart Master & Episode Uploader
         async function uploadContent() {
             const type = document.getElementById('contentType').value;
             const title = document.getElementById('title').value.trim();
@@ -349,14 +384,12 @@
             
             if(!title || !category) return showToast("Title & Category are required!", "warning");
 
-            // Type-specific validations
             if (type === 'movie' && !document.getElementById('m_stream').value) return showToast("Movie Stream URL is required!", "warning");
             if (type === 'series' && !document.getElementById('s_stream').value) return showToast("Episode Stream URL is required!", "warning");
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "Publishing...";
 
-            // Unified Master Data
             const masterData = {
                 title, category,
                 language: document.getElementById('language').value,
@@ -365,7 +398,6 @@
                 poster_url: document.getElementById('poster').value,
                 backdrop_url: document.getElementById('backdrop').value,
                 trailer_url: document.getElementById('trailer').value,
-                // If it's a series, we keep movie stream fields empty
                 stream_url: type === 'movie' ? document.getElementById('m_stream').value : "",
                 download_480: type === 'movie' ? document.getElementById('m_dl480').value : "",
                 download_720: type === 'movie' ? document.getElementById('m_dl720').value : "",
@@ -374,11 +406,9 @@
             };
 
             try {
-                // 1. Save/Update Master Record
                 if (editingMovieId) {
                     await db.collection("movies").doc(editingMovieId).update(masterData);
                 } else {
-                    // Check if series master exists to prevent duplicate titles in master list
                     let existing = null;
                     if(type === 'series') {
                         const snap = await db.collection("movies").where("title", "==", title).get();
@@ -386,13 +416,12 @@
                     }
                     if(!existing) {
                         const docRef = await db.collection("movies").add(masterData);
-                        editingMovieId = docRef.id; // Keep track so multiple episodes save to same master
+                        editingMovieId = docRef.id; 
                     } else {
                         editingMovieId = existing;
                     }
                 }
 
-                // 2. If Series, Save Episode Data dynamically
                 if (type === 'series') {
                     const epData = {
                         series_title: title,
@@ -406,9 +435,8 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     };
                     await db.collection("episodes").add(epData);
-                    showToast(`Success! Master Series saved & ${epData.ep_num} Added.`, "success");
+                    showToast(`Success! ${epData.ep_num} Added to Series.`, "success");
 
-                    // Auto-increment Episode for quick data entry
                     const currentEp = parseInt(epData.ep_num.replace(/\D/g, '')) || 0;
                     document.getElementById('s_ep_num').value = `EP ${currentEp + 1}`;
                     document.getElementById('s_ep_title').value = '';
@@ -419,7 +447,7 @@
                     
                 } else {
                     showToast("Movie published to App successfully!", "success");
-                    cancelEdit(); // Reset form for movies
+                    cancelEdit(); 
                 }
 
             } catch(e) {
@@ -443,7 +471,7 @@
             document.getElementById('cancelBtn').style.display = "none";
         }
 
-        // Live Real-Time Snapshots for Movies
+        // Database Observers
         db.collection("movies").orderBy("timestamp", "desc").onSnapshot(snap => {
             localMoviesList = [];
             document.getElementById('movieCount').innerText = snap.docs.length;
@@ -517,7 +545,6 @@
 
         window.delMovie = async (id) => { if(confirm("Delete this Master Record?")) await db.collection("movies").doc(id).delete(); };
 
-        // Episodes Tracker
         db.collection("episodes").orderBy("timestamp", "desc").onSnapshot(snap => {
             localEpisodesList = [];
             document.getElementById('stat-episodes-count').innerText = snap.docs.length;
@@ -548,7 +575,6 @@
         }
         window.delEp = async (id) => { if(confirm("Delete Episode?")) await db.collection("episodes").doc(id).delete(); };
 
-        // Categories & Users
         async function addCategory() {
             const name = document.getElementById('catName').value.trim();
             if(name) { await db.collection("categories").add({name}); document.getElementById('catName').value = ''; showToast("Category Added!");}
