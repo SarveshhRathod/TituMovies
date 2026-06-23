@@ -54,6 +54,7 @@
 </head>
 <body>
 
+    <!-- SIDEBAR NAVIGATION -->
     <div class="sidebar">
         <div class="logo-area">
             <h2>TITU ADMIN</h2>
@@ -65,10 +66,13 @@
         <button class="nav-btn" onclick="switchTab('users')">👥 User Control</button>
     </div>
 
+    <!-- MAIN CONTENT -->
     <div class="main-content">
 
+        <!-- TAB 1: MOVIES & SERIES -->
         <div id="tab-movies" class="tab-pane active">
             <div class="grid-2">
+                <!-- Uploader Form -->
                 <div class="card">
                     <h3>Upload / Edit Master Content</h3>
                     
@@ -100,7 +104,7 @@
                     <input type="text" id="trailer" placeholder="Trailer URL (YouTube)">
                     <input type="text" id="stream" placeholder="Main Stream URL (M3U8/MP4) [Required for Movies]">
 
-                    <span class="label">Download Links (Optional)</span>
+                    <span class="label">Download Links (Main / Movie)</span>
                     <input type="text" id="dl480" placeholder="480p Link">
                     <input type="text" id="dl720" placeholder="720p Link">
                     <input type="text" id="dl1080" placeholder="1080p Link">
@@ -109,6 +113,7 @@
                     <button id="cancelBtn" class="btn-primary" onclick="cancelEdit()" style="display:none; background:#d32f2f; margin-top:10px;">❌ Cancel Edit</button>
                 </div>
 
+                <!-- Live Data List -->
                 <div class="card">
                     <h3>Live Content Library (<span id="movieCount">0</span>)</h3>
                     <div id="moviesList" style="max-height: 700px; overflow-y: auto;">Loading...</div>
@@ -116,6 +121,7 @@
             </div>
         </div>
 
+        <!-- TAB 2: EPISODES MANAGER (NEW UPDATE) -->
         <div id="tab-episodes" class="tab-pane">
             <div class="grid-2">
                 <div class="card">
@@ -142,6 +148,12 @@
                     <span class="label">Stream URL (M3U8/MP4)</span>
                     <input type="text" id="ep_stream" placeholder="https://..." required>
 
+                    <!-- 🔥 NEW: EPISODE DOWNLOAD LINKS 🔥 -->
+                    <span class="label">Episode Download Links (Optional)</span>
+                    <input type="text" id="ep_dl480" placeholder="EP 480p Link">
+                    <input type="text" id="ep_dl720" placeholder="EP 720p Link">
+                    <input type="text" id="ep_dl1080" placeholder="EP 1080p Link">
+
                     <button class="btn-primary" onclick="uploadEpisode()">📺 Add Episode</button>
                 </div>
 
@@ -152,6 +164,7 @@
             </div>
         </div>
 
+        <!-- TAB 3: CATEGORIES -->
         <div id="tab-categories" class="tab-pane">
             <div class="card" style="max-width: 500px;">
                 <h3>Manage Categories</h3>
@@ -161,6 +174,7 @@
             </div>
         </div>
 
+        <!-- TAB 4: USERS -->
         <div id="tab-users" class="tab-pane">
             <div class="card">
                 <h3>User Control & Ban/Unban</h3>
@@ -170,6 +184,7 @@
 
     </div>
 
+    <!-- FIREBASE & LOGIC -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
@@ -185,7 +200,6 @@
         const db = firebase.firestore();
         let editingMovieId = null;
 
-        // --- TAB SWITCHER ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -193,7 +207,6 @@
             event.currentTarget.classList.add('active');
         }
 
-        // --- SMART TMDB FETCHER ---
         async function fetchTMDBData() {
             const input = document.getElementById('tmdbInput').value.trim();
             if (!input) return alert("Enter Name or ID!");
@@ -219,7 +232,6 @@
             } catch (e) { alert("Network Error / Proxy blocked."); }
         }
 
-        // --- MOVIE CRUD ---
         async function uploadMovie() {
             const title = document.getElementById('title').value;
             const category = document.getElementById('catDropdown').value;
@@ -255,19 +267,14 @@
             
             document.getElementById('movieCount').innerText = snap.docs.length;
             list.innerHTML = '';
-            
-            // Series dropdown list reset
             epSeriesDrop.innerHTML = '<option value="">Select a Series from Library...</option>';
 
             snap.forEach(doc => {
                 const data = doc.data();
-                
-                // Populating Series Dropdown in Episodes Tab
                 if(data.category && (data.category.toLowerCase().includes('series') || data.category.toLowerCase().includes('tv'))) {
                     epSeriesDrop.innerHTML += `<option value="${data.title}">${data.title}</option>`;
                 }
 
-                // Populating Movies List
                 list.innerHTML += `
                     <div class="list-item">
                         <div style="line-height:1.4;">
@@ -292,7 +299,7 @@
             editingMovieId = id;
             document.getElementById('submitBtn').innerText = "💾 Save Updates";
             document.getElementById('cancelBtn').style.display = "block";
-            switchTab('movies'); // Auto switch to edit form
+            switchTab('movies'); 
         };
 
         window.cancelEdit = () => {
@@ -303,20 +310,32 @@
         };
         window.delMovie = async (id) => { if(confirm("Delete Content?")) await db.collection("movies").doc(id).delete(); };
 
-        // --- EPISODE UPLOADER (NEW) ---
+        // --- EPISODE UPLOADER (UPDATED WITH DOWNLOADS) ---
         async function uploadEpisode() {
             const series_title = document.getElementById('ep_series_title').value;
             const season = document.getElementById('ep_season').value;
             const ep_num = document.getElementById('ep_num').value;
             const ep_title = document.getElementById('ep_title').value;
             const stream_url = document.getElementById('ep_stream').value;
+            
+            // 🔥 NAYA: Episode Download Links 🔥
+            const download_480 = document.getElementById('ep_dl480').value;
+            const download_720 = document.getElementById('ep_dl720').value;
+            const download_1080 = document.getElementById('ep_dl1080').value;
 
             if(!series_title || !stream_url) return alert("Select Series and enter Stream URL!");
 
-            await db.collection("episodes").add({ series_title, season, ep_num, ep_title, stream_url, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection("episodes").add({ 
+                series_title, season, ep_num, ep_title, stream_url, 
+                download_480, download_720, download_1080, // Saved in DB
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
             alert("📺 Episode Added Successfully!");
             document.getElementById('ep_stream').value = '';
             document.getElementById('ep_title').value = '';
+            document.getElementById('ep_dl480').value = '';
+            document.getElementById('ep_dl720').value = '';
+            document.getElementById('ep_dl1080').value = '';
         }
 
         db.collection("episodes").orderBy("timestamp", "desc").onSnapshot(snap => {
@@ -336,7 +355,7 @@
         });
         window.delEp = async (id) => { if(confirm("Delete Episode?")) await db.collection("episodes").doc(id).delete(); };
 
-        // --- CATEGORIES ---
+        // --- CATEGORIES & USERS ---
         async function addCategory() {
             const name = document.getElementById('catName').value.trim();
             if(name) { await db.collection("categories").add({name}); document.getElementById('catName').value = ''; }
@@ -351,7 +370,6 @@
             });
         });
 
-        // --- USERS ---
         db.collection("users").onSnapshot(snap => {
             const l = document.getElementById('userList'); l.innerHTML = "";
             snap.forEach(doc => {
