@@ -2,56 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Titu Movies | Pro Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <title>Titu Movies | PRO Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #050505; color: #fff; margin: 0; padding: 20px; }
-        .grid-layout { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; max-width: 1400px; margin: auto; }
-        .card { background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #FF9800; border: none; cursor: pointer; font-weight: bold; border-radius: 6px; margin-top: 5px; }
-        h3 { color: #FF9800; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .user-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 14px; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin: 5px 0; background: #111; border: 1px solid #333; color: #fff; }
+        button { background: #e67e22; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div class="grid-layout">
-    <!-- 1. CATEGORY & SETTINGS CONTROL -->
-    <div class="card">
-        <h3>⚙️ App Control</h3>
-        <input type="text" id="catName" placeholder="New Category Name...">
-        <button onclick="addCategory()">Add Category</button>
-        <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
-        <div id="catList"></div>
+    <div class="dashboard">
+        <div id="movieForm">
+            <h3>Add/Fetch Movie</h3>
+            <input type="text" id="tmdbId" placeholder="TMDb ID">
+            <button onclick="fetchMovie()">Auto Fetch Data</button>
+            <input type="text" id="mTitle" placeholder="Title">
+            <select id="mCat"></select>
+            <input type="text" id="mStream" placeholder="Stream URL">
+            <input type="text" id="dl720" placeholder="720p Download">
+            <input type="text" id="dl1080" placeholder="1080p Download">
+            <button onclick="saveMovie()">SAVE MOVIE</button>
+        </div>
+        <div id="userControl">
+            <h3>Users</h3>
+            <div id="uList"></div>
+        </div>
     </div>
 
-    <!-- 2. MOVIE UPLOADER (ALL FEATURES) -->
-    <div class="card">
-        <h3>🎬 Movie Master Uploader</h3>
-        <input type="text" id="tmdbInput" placeholder="TMDb/IMDb ID...">
-        <button onclick="fetchData()" style="background:#01b4e4;">Fetch Auto-Data 🚀</button>
-        <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
-        <input type="text" id="title" placeholder="Title">
-        <select id="catDropdown"></select>
-        <input type="text" id="poster" placeholder="Poster URL">
-        <input type="text" id="backdrop" placeholder="Backdrop (Slider) URL">
-        <input type="text" id="stream" placeholder="Stream URL">
-        <input type="text" id="dl480" placeholder="480p Link">
-        <input type="text" id="dl720" placeholder="720p Link">
-        <input type="text" id="dl1080" placeholder="1080p Link">
-        <button onclick="uploadMovie()">Publish to App</button>
-    </div>
-
-    <!-- 3. USER MANAGEMENT -->
-    <div class="card">
-        <h3>👥 User Control</h3>
-        <div id="userList"></div>
-    </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
@@ -64,59 +43,42 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // -- CATEGORY LOGIC --
-    async function addCategory() {
-        const name = document.getElementById('catName').value;
-        if(name) await db.collection("categories").add({name});
+    // 1. Fetch Categories
+    db.collection("categories").onSnapshot(s => {
+        const drop = document.getElementById('mCat');
+        drop.innerHTML = "";
+        s.forEach(doc => drop.innerHTML += `<option>${doc.data().name}</option>`);
+    });
+
+    // 2. Fetch Movie Data
+    async function fetchMovie() {
+        const id = document.getElementById('tmdbId').value;
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=91eebcbca31321a0b6f7b54e6bf377b0`).then(r => r.json());
+        if(res.title) {
+            document.getElementById('mTitle').value = res.title;
+        } else { alert("ID Error!"); }
     }
 
-    // -- MOVIE UPLOAD LOGIC --
-    async function uploadMovie() {
-        const movie = {
-            title: document.getElementById('title').value,
-            category: document.getElementById('catDropdown').value,
-            poster_url: document.getElementById('poster').value,
-            backdrop_url: document.getElementById('backdrop').value,
-            stream_url: document.getElementById('stream').value,
-            download_480: document.getElementById('dl480').value,
+    // 3. Save Movie
+    async function saveMovie() {
+        await db.collection("movies").add({
+            title: document.getElementById('mTitle').value,
+            category: document.getElementById('mCat').value,
+            stream_url: document.getElementById('mStream').value,
             download_720: document.getElementById('dl720').value,
             download_1080: document.getElementById('dl1080').value
-        };
-        await db.collection("movies").add(movie);
-        alert("Movie Published Successfully!");
+        });
+        alert("Saved!");
     }
 
-    // -- AUTO-FETCH LOGIC --
-    async function fetchData() {
-        const input = document.getElementById('tmdbInput').value;
-        const res = await fetch(`https://api.themoviedb.org/3/find/${input}?api_key=91eebcbca31321a0b6f7b54e6bf377b0&external_source=imdb_id`).then(r => r.json());
-        const item = res.movie_results[0] || res.tv_results[0];
-        if(item) {
-            document.getElementById('title').value = item.title || item.name;
-            document.getElementById('poster').value = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
-            document.getElementById('backdrop').value = `https://image.tmdb.org/t/p/w780${item.backdrop_path}`;
-        } else alert("Nahi mila!");
-    }
-
-    // -- REAL-TIME SYNC --
-    db.collection("categories").onSnapshot(snap => {
-        const d = document.getElementById('catDropdown');
-        d.innerHTML = "";
-        snap.forEach(doc => d.innerHTML += `<option>${doc.data().name}</option>`);
-    });
-
-    db.collection("users").onSnapshot(snap => {
-        const l = document.getElementById('userList');
-        l.innerHTML = "";
-        snap.forEach(doc => {
-            const u = doc.data();
-            l.innerHTML += `<div class="user-row">${u.email} <button onclick="toggleBan('${doc.id}', '${u.status}')" style="background:${u.status === 'banned' ? '#388e3c' : '#d32f2f'}">${u.status === 'banned' ? 'Unban' : 'Ban'}</button></div>`;
+    // 4. Ban User
+    db.collection("users").onSnapshot(s => {
+        const list = document.getElementById('uList');
+        list.innerHTML = "";
+        s.forEach(doc => {
+            list.innerHTML += `<div>${doc.data().email} <button onclick="db.collection('users').doc('${doc.id}').update({status:'banned'})">BAN</button></div>`;
         });
     });
-
-    window.toggleBan = (id, status) => {
-        db.collection("users").doc(id).update({status: status === 'banned' ? 'active' : 'banned'});
-    };
 </script>
 </body>
 </html>
