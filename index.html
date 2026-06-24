@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titu Movies | Master Admin Control</title>
+    
+    <!-- Google Fonts for Premium Look -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        /* ==========================================
+           🎨 COLOR THEME & VARIABLES
+           ========================================== */
         :root { 
             --bg: #09090b; 
             --surface: #18181b; 
@@ -20,61 +26,287 @@
             --green: #10b981;
         }
         
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        /* ==========================================
+           🛠️ GLOBAL STYLES
+           ========================================== */
+        * { 
+            box-sizing: border-box; 
+            transition: all 0.2s ease; 
+        }
         
-        /* Sidebar Navigation */
-        .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
-        .logo-area { padding: 0 24px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-        .logo-area h2 { color: var(--orange); margin: 0; font-weight: 800; font-size: 24px; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
-        .logo-area p { color: var(--muted); margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
         
-        .nav-btn { background: transparent; color: var(--muted); border: none; padding: 14px 24px; text-align: left; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; border-left: 4px solid transparent; display: flex; align-items: center; gap: 12px; }
-        .nav-btn:hover { color: var(--text); background: var(--surface-hover); }
-        .nav-btn.active { color: var(--orange); background: var(--orange-dim); border-left-color: var(--orange); font-weight: 600; }
+        /* ==========================================
+           📍 SIDEBAR NAVIGATION
+           ========================================== */
+        .sidebar { 
+            width: 260px; 
+            background: var(--surface); 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            padding: 24px 0; 
+            flex-shrink: 0; 
+        }
+        
+        .logo-area { 
+            padding: 0 24px 24px 24px; 
+            border-bottom: 1px solid var(--border); 
+            margin-bottom: 24px; 
+        }
+        
+        .logo-area h2 { 
+            color: var(--orange); 
+            margin: 0; 
+            font-weight: 800; 
+            font-size: 24px; 
+            letter-spacing: 0.5px; 
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.2); 
+        }
+        
+        .logo-area p { 
+            color: var(--muted); 
+            margin: 4px 0 0 0; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+        
+        .nav-btn { 
+            background: transparent; 
+            color: var(--muted); 
+            border: none; 
+            padding: 14px 24px; 
+            text-align: left; 
+            font-size: 14px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            width: 100%; 
+            border-left: 4px solid transparent; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        
+        .nav-btn:hover { 
+            color: var(--text); 
+            background: var(--surface-hover); 
+        }
+        
+        .nav-btn.active { 
+            color: var(--orange); 
+            background: var(--orange-dim); 
+            border-left-color: var(--orange); 
+            font-weight: 600; 
+        }
 
-        /* Main Content Area */
-        .main-content { flex: 1; padding: 32px; overflow-y: auto; background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.03), transparent 400px); }
-        .tab-pane { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .tab-pane.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* ==========================================
+           🖥️ MAIN CONTENT AREA
+           ========================================== */
+        .main-content { 
+            flex: 1; 
+            padding: 32px; 
+            overflow-y: auto; 
+            background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.03), transparent 400px); 
+        }
+        
+        .tab-pane { 
+            display: none; 
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        
+        .tab-pane.active { 
+            display: block; 
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        /* Stats Row */
-        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; }
-        .stat-card .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-        .stat-card .stat-val { font-size: 28px; font-weight: 700; color: var(--text); margin-top: 8px; }
+        /* ==========================================
+           📊 TOP STATS ROW
+           ========================================== */
+        .stats-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        
+        .stat-card { 
+            background: var(--surface); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .stat-card .stat-label { 
+            font-size: 12px; 
+            color: var(--muted); 
+            text-transform: uppercase; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+        }
+        
+        .stat-card .stat-val { 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--text); 
+            margin-top: 8px; 
+        }
 
-        /* Forms & Cards */
-        .card { background: var(--surface); padding: 24px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.3); }
-        .card h3 { margin-top: 0; margin-bottom: 20px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; font-size: 18px; font-weight: 700; }
+        /* ==========================================
+           📝 FORMS & CARDS
+           ========================================== */
+        .card { 
+            background: var(--surface); 
+            padding: 24px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.3); 
+        }
+        
+        .card h3 { 
+            margin-top: 0; 
+            margin-bottom: 20px; 
+            color: var(--text); 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px; 
+            font-size: 18px; 
+            font-weight: 700; 
+        }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        @media(max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        @media(max-width: 1024px) { 
+            .grid-2 { grid-template-columns: 1fr; } 
+        }
 
         .input-group { margin-bottom: 16px; }
-        input, select { width: 100%; padding: 12px 16px; margin: 6px 0 0 0; background: #0f0f11; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-size: 14px; }
-        input:focus, select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange-dim); }
-        .label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        button.btn-primary { width: 100%; padding: 14px; background: var(--orange); color: #000; border: none; cursor: pointer; font-weight: 700; border-radius: 8px; font-size: 15px; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.2); }
-        button.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        button.btn-primary:active { transform: translateY(0); }
+        input, select { 
+            width: 100%; 
+            padding: 12px 16px; 
+            margin: 6px 0 0 0; 
+            background: #0f0f11; 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 14px; 
+        }
         
-        /* Dynamic Sections */
-        .dynamic-section { border-radius: 10px; transition: 0.3s; }
-        #series-fields { padding: 20px; background: rgba(59, 130, 246, 0.05); border: 1px dashed var(--blue); }
-        #movie-fields { padding: 20px; background: rgba(249, 115, 22, 0.05); border: 1px dashed var(--orange); }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--orange); 
+            box-shadow: 0 0 0 2px var(--orange-dim); 
+        }
         
-        /* Lists */
+        .label { 
+            font-size: 12px; 
+            color: var(--muted); 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
+        
+        button.btn-primary { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--orange); 
+            color: #000; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.2); 
+        }
+        
+        button.btn-primary:hover { 
+            opacity: 0.9; 
+            transform: translateY(-1px); 
+        }
+        
+        button.btn-primary:active { 
+            transform: translateY(0); 
+        }
+
+        /* ==========================================
+           🚀 DYNAMIC FORM SECTIONS (MOVIE VS SERIES)
+           ========================================== */
+        .dynamic-section { 
+            border-radius: 10px; 
+            transition: 0.3s; 
+        }
+        
+        #series-fields { 
+            padding: 20px; 
+            background: rgba(59, 130, 246, 0.05); 
+            border: 1px dashed var(--blue); 
+        }
+        
+        #movie-fields { 
+            padding: 20px; 
+            background: rgba(249, 115, 22, 0.05); 
+            border: 1px dashed var(--orange); 
+        }
+
+        /* ==========================================
+           📋 LISTS & SEARCH BARS
+           ========================================== */
         .list-search { margin-bottom: 15px; }
-        .list-container { max-height: 550px; overflow-y: auto; padding-right: 4px; }
+        
+        .list-container { 
+            max-height: 550px; 
+            overflow-y: auto; 
+            padding-right: 4px; 
+        }
+        
         .list-container::-webkit-scrollbar { width: 6px; }
         .list-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #111113; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .list-item:hover { background: #141416; border-color: #333; }
-        .btn-small { padding: 8px 14px; margin-left: 6px; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; }
+        
+        .list-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 14px 16px; 
+            background: #111113; 
+            border-radius: 10px; 
+            margin-bottom: 12px; 
+            border: 1px solid var(--border); 
+        }
+        
+        .list-item:hover { 
+            background: #141416; 
+            border-color: #333; 
+        }
+        
+        .btn-small { 
+            padding: 8px 14px; 
+            margin-left: 6px; 
+            font-size: 12px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: white; 
+        }
+        
         .btn-red { background: var(--red); }
         .btn-red:hover { opacity: 0.85; }
         .btn-green { background: var(--green); }
@@ -82,20 +314,65 @@
         .btn-blue { background: var(--blue); }
         .btn-blue:hover { opacity: 0.85; }
 
-        /* Smart Fetcher Box */
-        .fetcher-box { background: rgba(59, 130, 246, 0.05); padding: 16px; border-radius: 10px; border: 1px dashed rgba(59, 130, 246, 0.3); margin-bottom: 20px; display: flex; gap: 12px; align-items: center; }
-        .fetcher-box input { margin: 0; flex: 1; border: 1px solid rgba(59,130,246,0.5); }
-        .fetcher-box input:focus { box-shadow: 0 0 0 2px rgba(59,130,246,0.2); border-color: var(--blue); }
-        .fetcher-box button { width: auto; margin: 0; background: var(--blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        /* ==========================================
+           🔍 SMART FETCHER BOX (TMDb)
+           ========================================== */
+        .fetcher-box { 
+            background: rgba(59, 130, 246, 0.05); 
+            padding: 16px; 
+            border-radius: 10px; 
+            border: 1px dashed rgba(59, 130, 246, 0.3); 
+            margin-bottom: 20px; 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+        }
+        
+        .fetcher-box input { 
+            margin: 0; 
+            flex: 1; 
+            border: 1px solid rgba(59,130,246,0.5); 
+        }
+        
+        .fetcher-box input:focus { 
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.2); 
+            border-color: var(--blue); 
+        }
+        
+        .fetcher-box button { 
+            width: auto; 
+            margin: 0; 
+            background: var(--blue); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            white-space: nowrap; 
+        }
+        
         .fetcher-box button:hover { opacity: 0.9; }
 
-        /* Toast notifications */
-        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
+        /* ==========================================
+           🍞 TOAST NOTIFICATIONS
+           ========================================== */
+        #toast-container { 
+            position: fixed; 
+            top: 24px; 
+            right: 24px; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGATION -->
+    <!-- ==========================================
+         SIDEBAR NAVIGATION
+         ========================================== -->
     <div class="sidebar">
         <div class="logo-area">
             <h2>TITU ADMIN</h2>
@@ -107,10 +384,12 @@
         <button class="nav-btn" onclick="switchTab('users', this)">👥 User Control</button>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- ==========================================
+         MAIN CONTENT AREA
+         ========================================== -->
     <div class="main-content">
 
-        <!-- STATS BAR -->
+        <!-- 📊 TOP STATS BAR -->
         <div class="stats-row">
             <div class="stat-card">
                 <span class="stat-label">Total Media Titles</span>
@@ -130,19 +409,23 @@
             </div>
         </div>
 
-        <!-- TAB 1: MOVIES & SERIES -->
+        <!-- ==========================================
+             TAB 1: MOVIES & SERIES (UPLOAD & LIBRARY)
+             ========================================== -->
         <div id="tab-movies" class="tab-pane active">
             <div class="grid-2">
-                <!-- Uploader Form -->
+                
+                <!-- 🛠️ Left Column: Uploader Form -->
                 <div class="card">
                     <h3>Upload / Edit Master Content</h3>
                     
+                    <!-- TMDb Smart Fetcher -->
                     <div class="fetcher-box">
-                        <input type="text" id="tmdbInput" placeholder="Paste Full TMDb URL (or IMDb ID / Name)...">
+                        <input type="text" id="tmdbInput" placeholder="Paste Full TMDb URL, IMDb ID or Name...">
                         <button onclick="fetchTMDBData()">Fetch URL Auto-Data 🚀</button>
                     </div>
 
-                    <!-- 🔥 INTELLIGENT CONTENT SWITCHER 🔥 -->
+                    <!-- 🔥 Intelligent Content Switcher -->
                     <div class="input-group">
                         <span class="label" style="color: var(--orange);">Detected Content Type</span>
                         <select id="contentType" onchange="toggleFormFields()">
@@ -151,6 +434,7 @@
                         </select>
                     </div>
 
+                    <!-- Basic Info -->
                     <div class="grid-2">
                         <div class="input-group">
                             <span class="label">Title</span>
@@ -158,16 +442,28 @@
                         </div>
                         <div class="input-group">
                             <span class="label">Category</span>
-                            <select id="catDropdown" required><option value="">Select Category</option></select>
+                            <select id="catDropdown" required>
+                                <option value="">Select Category</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="grid-3">
-                        <div class="input-group"><span class="label">Language</span><input type="text" id="language" value="Hindi"></div>
-                        <div class="input-group"><span class="label">Year</span><input type="text" id="release_year" placeholder="2024"></div>
-                        <div class="input-group"><span class="label">Rating</span><input type="text" id="rating" placeholder="8.5"></div>
+                        <div class="input-group">
+                            <span class="label">Language</span>
+                            <input type="text" id="language" value="Hindi">
+                        </div>
+                        <div class="input-group">
+                            <span class="label">Year</span>
+                            <input type="text" id="release_year" placeholder="2024">
+                        </div>
+                        <div class="input-group">
+                            <span class="label">Rating</span>
+                            <input type="text" id="rating" placeholder="8.5">
+                        </div>
                     </div>
 
+                    <!-- Images & Trailer -->
                     <div class="input-group">
                         <span class="label">Images & Media URLs</span>
                         <input type="text" id="poster" placeholder="Poster URL (Portrait)" style="margin-bottom: 10px;">
@@ -175,7 +471,7 @@
                         <input type="text" id="trailer" placeholder="Trailer URL (YouTube)">
                     </div>
 
-                    <!-- 🎥 MOVIE FIELDS -->
+                    <!-- 🎥 MOVIE SPECIFIC FIELDS (Hidden for Series) -->
                     <div id="movie-fields" class="dynamic-section">
                         <h4 style="margin-top:0; color:var(--orange);">Movie Stream & Downloads</h4>
                         <input type="text" id="m_stream" placeholder="Main Stream URL (M3U8/MP4) [Required]">
@@ -184,15 +480,22 @@
                         <input type="text" id="m_dl1080" placeholder="1080p Download Link" style="margin-top: 10px;">
                     </div>
 
-                    <!-- 📺 SERIES FIELDS -->
+                    <!-- 📺 SERIES SPECIFIC FIELDS (Hidden for Movies) -->
                     <div id="series-fields" class="dynamic-section" style="display: none;">
                         <h4 style="margin-top:0; color:var(--blue);">Add / Update Episode</h4>
                         <div class="grid-2">
-                            <div class="input-group"><span class="label">Season Number</span><input type="text" id="s_season" value="Season 1"></div>
-                            <div class="input-group"><span class="label">Episode Code</span><input type="text" id="s_ep_num" value="EP 1"></div>
+                            <div class="input-group">
+                                <span class="label">Season Number</span>
+                                <input type="text" id="s_season" value="Season 1">
+                            </div>
+                            <div class="input-group">
+                                <span class="label">Episode Code</span>
+                                <input type="text" id="s_ep_num" value="EP 1">
+                            </div>
                         </div>
                         <input type="text" id="s_ep_title" placeholder="Episode Title (Optional)" style="margin-bottom: 10px;">
                         <input type="text" id="s_stream" placeholder="Episode Stream URL (M3U8/MP4) [Required]">
+                        
                         <span class="label" style="display:block; margin-top:10px;">Episode Download Links</span>
                         <input type="text" id="s_dl480" placeholder="EP 480p Link">
                         <input type="text" id="s_dl720" placeholder="EP 720p Link" style="margin-top: 10px;">
@@ -203,7 +506,7 @@
                     <button id="cancelBtn" class="btn-primary" onclick="cancelEdit()" style="display:none; background:var(--red); color: white; margin-top:10px;">❌ Cancel Edit</button>
                 </div>
 
-                <!-- Live Data List -->
+                <!-- 📚 Right Column: Live Data Library -->
                 <div class="card">
                     <h3>Live Content Library (<span id="movieCount">0</span>)</h3>
                     <input type="text" id="movieSearch" class="list-search" oninput="filterMovies()" placeholder="🔍 Search library...">
@@ -212,7 +515,9 @@
             </div>
         </div>
 
-        <!-- TAB 2: EPISODES MANAGER (For editing old episodes) -->
+        <!-- ==========================================
+             TAB 2: EPISODES MANAGER (Editing Old Episodes)
+             ========================================== -->
         <div id="tab-episodes" class="tab-pane">
             <div class="card">
                 <h3>Episode Library & Management</h3>
@@ -221,19 +526,26 @@
             </div>
         </div>
 
-        <!-- TAB 3: CATEGORIES -->
+        <!-- ==========================================
+             TAB 3: CATEGORIES MANAGER
+             ========================================== -->
         <div id="tab-categories" class="tab-pane">
             <div class="card" style="max-width: 600px;">
                 <h3>Manage Categories</h3>
                 <div class="input-group" style="display: flex; gap: 10px; align-items: flex-end;">
-                    <div style="flex: 1;"><span class="label">Category Name</span><input type="text" id="catName" placeholder="E.g. Action, Web Series..." style="margin-top: 6px;"></div>
+                    <div style="flex: 1;">
+                        <span class="label">Category Name</span>
+                        <input type="text" id="catName" placeholder="E.g. Action, Web Series..." style="margin-top: 6px;">
+                    </div>
                     <button class="btn-primary" onclick="addCategory()" style="width: auto; height: 46px; white-space: nowrap; margin-bottom: 1px;">+ Add Category</button>
                 </div>
                 <div id="catList" style="margin-top: 25px;"></div>
             </div>
         </div>
 
-        <!-- TAB 4: USERS -->
+        <!-- ==========================================
+             TAB 4: USERS & BAN CONTROL
+             ========================================== -->
         <div id="tab-users" class="tab-pane">
             <div class="card">
                 <h3>User Control & Ban/Unban</h3>
@@ -243,14 +555,21 @@
 
     </div>
 
-    <!-- Toast UI Container -->
+    <!-- 🍞 Toast UI Container -->
     <div id="toast-container"></div>
 
-    <!-- FIREBASE & LOGIC -->
+    <!-- ==========================================
+         🔥🔥 FIREBASE & JAVASCRIPT LOGIC 🔥🔥
+         ========================================== -->
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <script>
-        // CONFIGURATION
+        // ------------------------------------------
+        // 1. FIREBASE CONFIGURATION
+        // ------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyBdDxTR0Rsm2cgYRr9lMZXkd0rc7VBmhZg",
             authDomain: "titu-movies.firebaseapp.com",
@@ -263,34 +582,78 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
+        // Global State Variables
         let editingMovieId = null;
         let localMoviesList = [];
         let localEpisodesList = [];
 
+        // ------------------------------------------
+        // 2. TOAST NOTIFICATION SYSTEM
+        // ------------------------------------------
         function showToast(message, type = "success") {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
+            
+            // Set colors based on notification type
             let accentColor = 'var(--green)';
             if (type === 'error') accentColor = 'var(--red)';
             if (type === 'warning') accentColor = 'var(--orange)';
             if (type === 'info') accentColor = 'var(--blue)';
 
-            toast.style.cssText = `background: var(--surface); border-left: 4px solid ${accentColor}; color: #fff; padding: 14px 20px; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 12px; min-width: 280px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 14px; border: 1px solid var(--border);`;
+            // Styling the toast dynamically
+            toast.style.cssText = `
+                background: var(--surface); 
+                border-left: 4px solid ${accentColor}; 
+                color: #fff; 
+                padding: 14px 20px; 
+                border-radius: 8px; 
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); 
+                display: flex; 
+                align-items: center; 
+                gap: 12px; 
+                min-width: 280px; 
+                transform: translateX(120%); 
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+                font-size: 14px; 
+                border: 1px solid var(--border);
+            `;
+            
             toast.innerHTML = `<span>${message}</span>`;
             container.appendChild(toast);
+            
+            // Animate In
             setTimeout(() => { toast.style.transform = 'translateX(0)'; }, 50);
-            setTimeout(() => { toast.style.transform = 'translateX(120%)'; setTimeout(() => { toast.remove(); }, 300); }, 4000);
+            
+            // Auto Remove after 4 seconds
+            setTimeout(() => { 
+                toast.style.transform = 'translateX(120%)'; 
+                setTimeout(() => { toast.remove(); }, 300); 
+            }, 4000);
         }
 
+        // ------------------------------------------
+        // 3. UI TAB SWITCHING LOGIC
+        // ------------------------------------------
         function switchTab(tabId, btnEl) {
+            // Remove active classes from all tabs and buttons
             document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Add active class to target tab
             document.getElementById('tab-' + tabId).classList.add('active');
-            if(btnEl) btnEl.classList.add('active');
+            
+            // Add active class to the clicked button
+            if (btnEl) {
+                btnEl.classList.add('active');
+            }
         }
 
+        // ------------------------------------------
+        // 4. DYNAMIC FORM TOGGLER (MOVIE VS SERIES)
+        // ------------------------------------------
         function toggleFormFields() {
             const type = document.getElementById('contentType').value;
+            
             if (type === 'series') {
                 document.getElementById('movie-fields').style.display = 'none';
                 document.getElementById('series-fields').style.display = 'block';
@@ -300,121 +663,176 @@
             }
         }
 
-        // 🔥 THE MAGIC FIX: FULL URL PARSING & AUTO TYPE DETECTION 🔥
+        // ------------------------------------------
+        // 5. SMART TMDb FETCHER (WITH URL PARSING)
+        // ------------------------------------------
         async function fetchTMDBData() {
             const input = document.getElementById('tmdbInput').value.trim();
-            if (!input) return showToast("Enter Full TMDb URL, IMDb ID or Name!", "warning");
+            
+            if (!input) {
+                return showToast("Enter Full TMDb URL, IMDb ID or Name!", "warning");
+            }
             
             const btn = document.querySelector('.fetcher-box button');
-            btn.disabled = true; btn.innerText = "Fetching...";
+            btn.disabled = true; 
+            btn.innerText = "Fetching...";
 
             const apiKey = "91eebcbca31321a0b6f7b54e6bf377b0";
             let tmdbUrl = "";
-            let mediaTypeHint = ""; // 'tv' or 'movie'
+            let mediaTypeHint = ""; // Used to explicitly detect 'tv' or 'movie'
 
-            // 1. DYNAMIC URL DETECTION
+            // --- A. URL Parsing System ---
             if (input.includes("themoviedb.org")) {
+                // Regex to find /movie/ID or /tv/ID
                 const match = input.match(/\/(movie|tv)\/(\d+)/);
                 if (match) {
-                    mediaTypeHint = match[1]; 
+                    mediaTypeHint = match[1]; // will be 'tv' or 'movie'
                     const tmdbId = match[2];
                     tmdbUrl = `https://api.themoviedb.org/3/${mediaTypeHint}/${tmdbId}?api_key=${apiKey}`;
                 } else {
-                    btn.disabled = false; btn.innerText = "Fetch URL Auto-Data 🚀";
+                    btn.disabled = false; 
+                    btn.innerText = "Fetch URL Auto-Data 🚀";
                     return showToast("Invalid TMDb URL format!", "error");
                 }
             } 
-            // 2. IMDB ID DETECTION (tt1234567)
+            // --- B. IMDb ID Detection (tt1234567) ---
             else if (input.startsWith("tt")) {
                 tmdbUrl = `https://api.themoviedb.org/3/find/${input}?api_key=${apiKey}&external_source=imdb_id`;
             } 
-            // 3. TEXT SEARCH
+            // --- C. Normal Text Search ---
             else {
                 tmdbUrl = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(input)}`;
             }
 
             try {
                 let res;
-                try { res = await fetch(tmdbUrl).then(r => r.json()); } 
-                catch (corsErr) { res = await fetch("https://corsproxy.io/?" + encodeURIComponent(tmdbUrl)).then(r => r.json()); }
+                // Attempt direct fetch, fallback to proxy if CORS blocked
+                try { 
+                    res = await fetch(tmdbUrl).then(r => r.json()); 
+                } catch (corsErr) { 
+                    res = await fetch("https://corsproxy.io/?" + encodeURIComponent(tmdbUrl)).then(r => r.json()); 
+                }
 
                 let item = null;
                 let isTV = false;
 
-                // Extract data based on the method
+                // Extract exact data based on how we searched
                 if (mediaTypeHint) {
                     item = res; 
                     isTV = (mediaTypeHint === 'tv');
                 } else if (input.startsWith("tt")) {
-                    if (res.tv_results && res.tv_results.length > 0) { item = res.tv_results[0]; isTV = true; }
-                    else if (res.movie_results && res.movie_results.length > 0) { item = res.movie_results[0]; isTV = false; }
+                    if (res.tv_results && res.tv_results.length > 0) { 
+                        item = res.tv_results[0]; 
+                        isTV = true; 
+                    } else if (res.movie_results && res.movie_results.length > 0) { 
+                        item = res.movie_results[0]; 
+                        isTV = false; 
+                    }
                 } else {
                     item = res.results?.find(x => x.media_type === 'movie' || x.media_type === 'tv');
-                    if (item) isTV = (item.media_type === 'tv');
+                    if (item) {
+                        isTV = (item.media_type === 'tv');
+                    }
                 }
                 
-                if (!item || item.success === false) return showToast("No metadata found on TMDB!", "error");
+                // Validate if we actually found something
+                if (!item || item.success === false) {
+                    return showToast("No metadata found on TMDB!", "error");
+                }
 
-                // Auto Type Detection & Form Switch
+                // --- Set Form Type Automatically ---
                 document.getElementById('contentType').value = isTV ? 'series' : 'movie';
                 toggleFormFields(); 
 
-                // Fill Inputs
+                // --- Populate Form Fields ---
                 document.getElementById('title').value = item.title || item.name || "";
                 document.getElementById('release_year').value = (item.release_date || item.first_air_date || "").split('-')[0];
                 document.getElementById('rating').value = item.vote_average ? parseFloat(item.vote_average).toFixed(1) : "";
+                
+                // Image Paths
                 document.getElementById('poster').value = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
                 document.getElementById('backdrop').value = item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : "";
                 
+                // Language Mapping
                 let lang = item.original_language || "hi";
-                document.getElementById('language').value = lang === 'hi' ? 'Hindi' : (lang === 'en' ? 'English' : lang.toUpperCase());
+                if (lang === 'hi') {
+                    document.getElementById('language').value = 'Hindi';
+                } else if (lang === 'en') {
+                    document.getElementById('language').value = 'English';
+                } else {
+                    document.getElementById('language').value = lang.toUpperCase();
+                }
                 
                 showToast(`Auto-Data fetched! Detected as: ${isTV ? 'TV Series' : 'Movie'}`);
+
             } catch (e) { 
                 showToast("Failed to fetch data.", "error"); 
             } finally { 
-                btn.disabled = false; btn.innerText = "Fetch URL Auto-Data 🚀"; 
+                btn.disabled = false; 
+                btn.innerText = "Fetch URL Auto-Data 🚀"; 
             }
         }
 
+        // ------------------------------------------
+        // 6. MASTER CONTENT UPLOADER (Movies & Series)
+        // ------------------------------------------
         async function uploadContent() {
             const type = document.getElementById('contentType').value;
             const title = document.getElementById('title').value.trim();
             const category = document.getElementById('catDropdown').value;
             
-            if(!title || !category) return showToast("Title & Category are required!", "warning");
+            // Basic Validations
+            if (!title || !category) {
+                return showToast("Title & Category are required!", "warning");
+            }
 
-            if (type === 'movie' && !document.getElementById('m_stream').value) return showToast("Movie Stream URL is required!", "warning");
-            if (type === 'series' && !document.getElementById('s_stream').value) return showToast("Episode Stream URL is required!", "warning");
+            if (type === 'movie' && !document.getElementById('m_stream').value) {
+                return showToast("Movie Stream URL is required!", "warning");
+            }
+            if (type === 'series' && !document.getElementById('s_stream').value) {
+                return showToast("Episode Stream URL is required!", "warning");
+            }
 
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "Publishing...";
+            btn.disabled = true; 
+            btn.innerText = "Publishing...";
 
+            // Create Master Data Object
             const masterData = {
-                title, category,
+                title: title, 
+                category: category,
+                type: type, // Identifies if it's a series or movie in the App
                 language: document.getElementById('language').value,
                 release_year: document.getElementById('release_year').value,
                 rating: document.getElementById('rating').value,
                 poster_url: document.getElementById('poster').value,
                 backdrop_url: document.getElementById('backdrop').value,
                 trailer_url: document.getElementById('trailer').value,
+                
+                // If it's a series, we keep movie stream/download fields empty
                 stream_url: type === 'movie' ? document.getElementById('m_stream').value : "",
                 download_480: type === 'movie' ? document.getElementById('m_dl480').value : "",
                 download_720: type === 'movie' ? document.getElementById('m_dl720').value : "",
                 download_1080: type === 'movie' ? document.getElementById('m_dl1080').value : "",
+                
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
+                // Step A: Save/Update Master Record
                 if (editingMovieId) {
                     await db.collection("movies").doc(editingMovieId).update(masterData);
                 } else {
+                    // Check if series master exists to prevent duplicate titles in master list
                     let existing = null;
-                    if(type === 'series') {
+                    if (type === 'series') {
                         const snap = await db.collection("movies").where("title", "==", title).get();
-                        if(!snap.empty) existing = snap.docs[0].id;
+                        if (!snap.empty) {
+                            existing = snap.docs[0].id;
+                        }
                     }
-                    if(!existing) {
+                    
+                    if (!existing) {
                         const docRef = await db.collection("movies").add(masterData);
                         editingMovieId = docRef.id; 
                     } else {
@@ -422,6 +840,7 @@
                     }
                 }
 
+                // Step B: If Series, Save Episode Data dynamically
                 if (type === 'series') {
                     const epData = {
                         series_title: title,
@@ -434,11 +853,15 @@
                         download_1080: document.getElementById('s_dl1080').value,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     };
+                    
                     await db.collection("episodes").add(epData);
                     showToast(`Success! ${epData.ep_num} Added to Series.`, "success");
 
+                    // Auto-increment Episode Number for rapid entry
                     const currentEp = parseInt(epData.ep_num.replace(/\D/g, '')) || 0;
                     document.getElementById('s_ep_num').value = `EP ${currentEp + 1}`;
+                    
+                    // Clear episode specific fields
                     document.getElementById('s_ep_title').value = '';
                     document.getElementById('s_stream').value = '';
                     document.getElementById('s_dl480').value = '';
@@ -451,48 +874,130 @@
                 }
 
             } catch(e) {
-                showToast("Error: " + e.message, "error");
+                showToast("Database Error: " + e.message, "error");
             } finally {
-                btn.disabled = false; btn.innerText = "📤 Publish to App";
+                btn.disabled = false; 
+                btn.innerText = "📤 Publish to App";
             }
         }
 
+        // ------------------------------------------
+        // 7. EDITING & CANCELLATION
+        // ------------------------------------------
         function cancelEdit() {
             editingMovieId = null;
+            
+            // Clear all text inputs except season/episode tracking
             document.querySelectorAll('#tab-movies input').forEach(i => {
-                if(i.id !== 's_season' && i.id !== 's_ep_num') i.value = '';
+                if(i.id !== 's_season' && i.id !== 's_ep_num') {
+                    i.value = '';
+                }
             });
+            
+            // Reset Dropdowns
             document.getElementById('catDropdown').value = '';
             document.getElementById('contentType').value = 'movie';
             toggleFormFields();
+            
+            // Reset Series Trackers
             document.getElementById('s_season').value = 'Season 1';
             document.getElementById('s_ep_num').value = 'EP 1';
+            
+            // Reset Buttons
             document.getElementById('submitBtn').innerText = "📤 Publish to App";
             document.getElementById('cancelBtn').style.display = "none";
         }
 
-        // Database Observers
+        // Load Movie into Form for Editing
+        window.loadEdit = async (id, isSeries) => {
+            try {
+                const doc = await db.collection("movies").doc(id).get();
+                const d = doc.data();
+                
+                // Set Form Type based on fetched data
+                document.getElementById('contentType').value = isSeries ? 'series' : 'movie';
+                toggleFormFields();
+
+                // Populate fields
+                document.getElementById('title').value = d.title || "";
+                document.getElementById('catDropdown').value = d.category || "";
+                document.getElementById('language').value = d.language || "";
+                document.getElementById('release_year').value = d.release_year || "";
+                document.getElementById('rating').value = d.rating || "";
+                document.getElementById('poster').value = d.poster_url || "";
+                document.getElementById('backdrop').value = d.backdrop_url || "";
+                document.getElementById('trailer').value = d.trailer_url || "";
+                
+                // Populate Movie links if not a series
+                if (!isSeries) {
+                    document.getElementById('m_stream').value = d.stream_url || "";
+                    document.getElementById('m_dl480').value = d.download_480 || "";
+                    document.getElementById('m_dl720').value = d.download_720 || "";
+                    document.getElementById('m_dl1080').value = d.download_1080 || "";
+                }
+                
+                editingMovieId = id;
+                document.getElementById('submitBtn').innerText = isSeries ? "💾 Update Master & Add EP" : "💾 Save Updates";
+                document.getElementById('cancelBtn').style.display = "block";
+                
+                switchTab('movies'); 
+                showToast("Form loaded for: " + d.title, "info");
+                
+            } catch(e) { 
+                showToast("Failed to fetch edit data.", "error"); 
+            }
+        };
+
+        window.delMovie = async (id) => { 
+            if(confirm("Delete this Master Record permanently?")) {
+                await db.collection("movies").doc(id).delete();
+                showToast("Master content deleted!");
+            }
+        };
+
+        // ------------------------------------------
+        // 8. REAL-TIME DATA LISTENERS (Firestore)
+        // ------------------------------------------
+        
+        // --- Movies & Series Listener ---
         db.collection("movies").orderBy("timestamp", "desc").onSnapshot(snap => {
             localMoviesList = [];
             document.getElementById('movieCount').innerText = snap.docs.length;
             document.getElementById('stat-movies-count').innerText = snap.docs.length;
-            snap.forEach(doc => { localMoviesList.push({ id: doc.id, ...doc.data() }); });
+            
+            snap.forEach(doc => { 
+                localMoviesList.push({ id: doc.id, ...doc.data() }); 
+            });
+            
             renderMoviesList(localMoviesList);
         });
 
         function filterMovies() {
             const query = document.getElementById('movieSearch').value.toLowerCase().trim();
-            if(!query) { renderMoviesList(localMoviesList); return; }
-            const filtered = localMoviesList.filter(m => m.title.toLowerCase().includes(query) || (m.category && m.category.toLowerCase().includes(query)));
+            if (!query) { 
+                renderMoviesList(localMoviesList); 
+                return; 
+            }
+            
+            const filtered = localMoviesList.filter(m => 
+                m.title.toLowerCase().includes(query) || 
+                (m.category && m.category.toLowerCase().includes(query))
+            );
             renderMoviesList(filtered);
         }
 
         function renderMoviesList(items) {
             const list = document.getElementById('moviesList');
             list.innerHTML = '';
-            if(items.length === 0) { list.innerHTML = `<div style="color:var(--muted); text-align:center; padding: 20px;">No content found.</div>`; return; }
+            
+            if (items.length === 0) { 
+                list.innerHTML = `<div style="color:var(--muted); text-align:center; padding: 20px;">No content found.</div>`; 
+                return; 
+            }
+            
             items.forEach(data => {
-                const isSer = data.category && (data.category.toLowerCase().includes('series') || data.category.toLowerCase().includes('tv'));
+                const isSer = data.type === 'series' || (data.category && (data.category.toLowerCase().includes('series') || data.category.toLowerCase().includes('tv')));
+                
                 list.innerHTML += `
                     <div class="list-item">
                         <div style="line-height:1.5;">
@@ -510,58 +1015,37 @@
             });
         }
 
-        window.loadEdit = async (id, isSeries) => {
-            try {
-                const doc = await db.collection("movies").doc(id).get();
-                const d = doc.data();
-                
-                document.getElementById('contentType').value = isSeries ? 'series' : 'movie';
-                toggleFormFields();
-
-                document.getElementById('title').value = d.title || "";
-                document.getElementById('catDropdown').value = d.category || "";
-                document.getElementById('language').value = d.language || "";
-                document.getElementById('release_year').value = d.release_year || "";
-                document.getElementById('rating').value = d.rating || "";
-                document.getElementById('poster').value = d.poster_url || "";
-                document.getElementById('backdrop').value = d.backdrop_url || "";
-                document.getElementById('trailer').value = d.trailer_url || "";
-                
-                if(!isSeries) {
-                    document.getElementById('m_stream').value = d.stream_url || "";
-                    document.getElementById('m_dl480').value = d.download_480 || "";
-                    document.getElementById('m_dl720').value = d.download_720 || "";
-                    document.getElementById('m_dl1080').value = d.download_1080 || "";
-                }
-                
-                editingMovieId = id;
-                document.getElementById('submitBtn').innerText = isSeries ? "💾 Update Master & Add EP" : "💾 Save Updates";
-                document.getElementById('cancelBtn').style.display = "block";
-                
-                switchTab('movies'); 
-                showToast("Form loaded for: " + d.title, "info");
-            } catch(e) { showToast("Failed to fetch edit data.", "error"); }
-        };
-
-        window.delMovie = async (id) => { if(confirm("Delete this Master Record?")) await db.collection("movies").doc(id).delete(); };
-
+        // --- Episodes Listener ---
         db.collection("episodes").orderBy("timestamp", "desc").onSnapshot(snap => {
             localEpisodesList = [];
             document.getElementById('stat-episodes-count').innerText = snap.docs.length;
-            snap.forEach(doc => { localEpisodesList.push({ id: doc.id, ...doc.data() }); });
+            
+            snap.forEach(doc => { 
+                localEpisodesList.push({ id: doc.id, ...doc.data() }); 
+            });
+            
             renderEpisodesList(localEpisodesList);
         });
 
         function filterEpisodes() {
             const query = document.getElementById('episodesSearch').value.toLowerCase().trim();
-            if(!query) { renderEpisodesList(localEpisodesList); return; }
-            const filtered = localEpisodesList.filter(ep => (ep.series_title && ep.series_title.toLowerCase().includes(query)) || (ep.ep_title && ep.ep_title.toLowerCase().includes(query)) || (ep.ep_num && ep.ep_num.toLowerCase().includes(query)));
+            if (!query) { 
+                renderEpisodesList(localEpisodesList); 
+                return; 
+            }
+            
+            const filtered = localEpisodesList.filter(ep => 
+                (ep.series_title && ep.series_title.toLowerCase().includes(query)) || 
+                (ep.ep_title && ep.ep_title.toLowerCase().includes(query)) || 
+                (ep.ep_num && ep.ep_num.toLowerCase().includes(query))
+            );
             renderEpisodesList(filtered);
         }
 
         function renderEpisodesList(items) {
             const list = document.getElementById('episodesList');
             list.innerHTML = '';
+            
             items.forEach(d => {
                 list.innerHTML += `
                     <div class="list-item">
@@ -573,32 +1057,74 @@
                     </div>`;
             });
         }
-        window.delEp = async (id) => { if(confirm("Delete Episode?")) await db.collection("episodes").doc(id).delete(); };
+        
+        window.delEp = async (id) => { 
+            if(confirm("Delete Episode?")) {
+                await db.collection("episodes").doc(id).delete();
+                showToast("Episode Deleted!");
+            }
+        };
 
+        // --- Categories Listener ---
         async function addCategory() {
             const name = document.getElementById('catName').value.trim();
-            if(name) { await db.collection("categories").add({name}); document.getElementById('catName').value = ''; showToast("Category Added!");}
+            if (name) { 
+                await db.collection("categories").add({name}); 
+                document.getElementById('catName').value = ''; 
+                showToast("Category Added!");
+            }
         }
-        window.delCat = async (id) => { if(confirm("Delete Category?")) await db.collection("categories").doc(id).delete(); };
+        
+        window.delCat = async (id) => { 
+            if(confirm("Delete Category?")) {
+                await db.collection("categories").doc(id).delete();
+            }
+        };
+        
         db.collection("categories").onSnapshot(snap => {
-            const drop = document.getElementById('catDropdown'); const list = document.getElementById('catList');
-            drop.innerHTML = '<option value="">Select Category</option>'; list.innerHTML = '';
+            const drop = document.getElementById('catDropdown'); 
+            const list = document.getElementById('catList');
+            
+            drop.innerHTML = '<option value="">Select Category</option>'; 
+            list.innerHTML = '';
+            
             document.getElementById('stat-categories-count').innerText = snap.docs.length;
+            
             snap.forEach(doc => {
-                drop.innerHTML += `<option value="${doc.data().name}">${doc.data().name}</option>`;
-                list.innerHTML += `<div class="list-item"><span>${doc.data().name}</span><button class="btn-small btn-red" onclick="delCat('${doc.id}')">X</button></div>`;
+                const catName = doc.data().name;
+                drop.innerHTML += `<option value="${catName}">${catName}</option>`;
+                list.innerHTML += `
+                    <div class="list-item">
+                        <span>${catName}</span>
+                        <button class="btn-small btn-red" onclick="delCat('${doc.id}')">X</button>
+                    </div>`;
             });
         });
 
+        // --- Users & Bans Listener ---
         db.collection("users").onSnapshot(snap => {
-            const l = document.getElementById('userList'); l.innerHTML = "";
+            const list = document.getElementById('userList'); 
+            list.innerHTML = "";
             document.getElementById('stat-users-count').innerText = snap.docs.length;
+            
             snap.forEach(doc => {
-                const u = doc.data(); const isBan = u.status === 'banned';
-                l.innerHTML += `<div class="list-item"><span style="color:${isBan?'var(--red)':'#fafafa'}">${u.email}</span><button class="btn-small ${isBan?'btn-green':'btn-red'}" onclick="toggleBan('${doc.id}', ${isBan})">${isBan?'Unban':'Ban'}</button></div>`;
+                const u = doc.data(); 
+                const isBan = u.status === 'banned';
+                
+                list.innerHTML += `
+                    <div class="list-item">
+                        <span style="color:${isBan ? 'var(--red)' : '#fafafa'}">${u.email || "No Email"}</span>
+                        <button class="btn-small ${isBan ? 'btn-green' : 'btn-red'}" onclick="toggleBan('${doc.id}', ${isBan})">
+                            ${isBan ? 'Unban' : 'Ban'}
+                        </button>
+                    </div>`;
             });
         });
-        window.toggleBan = async (id, isBan) => { await db.collection("users").doc(id).update({ status: isBan ? 'active' : 'banned' }); };
+        
+        window.toggleBan = async (id, isBan) => { 
+            await db.collection("users").doc(id).update({ status: isBan ? 'active' : 'banned' }); 
+            showToast(isBan ? "User Unbanned" : "User Banned", isBan ? "success" : "warning");
+        };
     </script>
 </body>
 </html>
